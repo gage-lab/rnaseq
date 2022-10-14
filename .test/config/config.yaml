@@ -7,3 +7,5 @@ ref:
   build: hg38
   region: chr21
 
+params:
+  tetranscripts_count: "--fragmentLength 600"

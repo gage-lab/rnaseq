@@ -16,6 +16,6 @@ include: "rules/count.smk"
 rule all:
     input:
         expand(
-            "results/star/{sample}/Aligned.sortedByCoord.out.bam",
+            rules.tetranscripts_count.output,
             sample=samples["sample_name"],
         ),
