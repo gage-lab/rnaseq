@@ -1,0 +1,8 @@
+# path or URL to sample sheet (TSV format, columns: sample, condition, ...)
+samples: .test/config/samples.tsv
+
+
+ref:
+  species: Homo_sapiens
+  build: hg38
+

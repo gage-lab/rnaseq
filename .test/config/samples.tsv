@@ -1,0 +1,3 @@
+sample_name	fq1	fq2	sra	strandedness
+A1	.test/ngs-test-data/reads/a.scerevisiae.1.fq	.test/ngs-test-data/reads/a.scerevisiae.2.fq			
+B1	.test/ngs-test-data/reads/b.scerevisiae.1.fq	.test/ngs-test-data/reads/b.scerevisiae.2.fq		
