@@ -1,5 +1,7 @@
 # Gage Lab RNA-seq pipeline
 
+![Tests](https://github.com/gage-lab/rnaseq/actions/workflows/main.yml/badge.svg)
+
 Alignment and quantification pipeline for single-end or paired-end Illumina RNA-seq reads
 
 ## Current features
