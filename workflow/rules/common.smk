@@ -7,6 +7,17 @@ samples = (
 )
 
 
+if config["ref"]["region"] == "chr21":
+    genome = {
+        "fa": ".test/ngs-test-data/ref/genome.chr21.fa",
+        "fai": ".test/ngs-test-data/ref/genome.chr21.fa.fai",
+    }
+    genes = ".test/ngs-test-data/ref/annotation.chr21.gtf"
+elif config["ref"]["region"] == None:
+    genome = {"fa": "resources/genome.fa", "fai": "resources/genome.fa.fai"}
+    genes = "resources/gencode.gtf"
+
+
 def is_paired_end(sample):
     sample_units = samples.loc[sample]
     null_units = sample_units.isnull()

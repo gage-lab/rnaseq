@@ -16,11 +16,12 @@ rule star:
     wrapper:
         "v1.16.0/bio/star/align"
 
+
 rule samtools_index:
     input:
         rules.star.output.aln,
     output:
-        rules.star.output.aln + ".bai"
+        rules.star.output.aln + ".bai",
     log:
         "results/star/{sample}/samtools_index.log",
     params:

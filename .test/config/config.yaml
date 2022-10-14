@@ -5,4 +5,5 @@ samples: .test/config/samples.tsv
 ref:
   species: Homo_sapiens
   build: hg38
+  region: chr21
 
