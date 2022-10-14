@@ -1,21 +1,25 @@
-# Snakemake workflow: `<name>`
+# Gage Lab RNA-seq pipeline
 
-[![Snakemake](https://img.shields.io/badge/snakemake-≥6.3.0-brightgreen.svg)](https://snakemake.github.io)
-[![GitHub actions status](https://github.com/<owner>/<repo>/workflows/Tests/badge.svg?branch=main)](https://github.com/<owner>/<repo>/actions?query=branch%3Amain+workflow%3ATests)
+Alignment and quantification pipeline for single-end or paired-end Illumina RNA-seq reads
 
+## Current features
 
-A Snakemake workflow for `<description>`
+1. Downloading reference genome, STAR index, and GENCODE annotation
+2. Read alignment with STAR, flexible to single-end or paired-end reads
 
+## Coming soon
 
-## Usage
+1. tetranscripts for quantification
+2. handling of STAR parameters depending on strandedness of sequencing data
 
-The usage of this workflow is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog/?usage=<owner>%2F<repo>).
+## Testing
 
-If you use this workflow in a paper, don't forget to give credits to the authors by citing the URL of this (original) <repo>sitory and its DOI (see above).
-
-# TODO
-
-* Replace `<owner>` and `<repo>` everywhere in the template (also under .github/workflows) with the correct `<repo>` name and owning user or organization.
-* Replace `<name>` with the workflow name (can be the same as `<repo>`).
-* Replace `<description>` with a description of what the workflow does.
-* The workflow will occur in the snakemake-workflow-catalog once it has been made public. Then the link under "Usage" will point to the usage instructions if `<owner>` and `<repo>` were correctly set.
+```bash
+snakemake \
+   all \
+   --cores 1 \
+   --use-conda \
+   --show-failed-logs \
+   --conda-cleanup-pkgs cache \
+   --configfile .test/config/config.yaml 
+```
