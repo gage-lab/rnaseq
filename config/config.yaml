@@ -1,0 +1,14 @@
+# path or URL to sample sheet (TSV format, columns: sample, condition, ...)
+samples: config/samples.tsv
+
+
+ref:
+  # AWS iGenomes species name: 
+  # OPTIONS: Homo_sapiens, Mus_musculus
+  species: Homo_sapiens
+  # Genome build
+  # OPTIONS:
+  #   - Homo_sapiens: hg38
+  #   - Mus_musculus: mm39
+  build: hg38
+
