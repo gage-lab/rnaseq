@@ -14,7 +14,8 @@ include: "rules/count.smk"
 
 
 rule all:
-	input:
-		expand(
-			"results/star/{sample}/Aligned.sortedByCoord.out.bam", sample=samples['sample_name']
-		)
+    input:
+        expand(
+            "results/star/{sample}/Aligned.sortedByCoord.out.bam",
+            sample=samples["sample_name"],
+        ),

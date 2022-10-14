@@ -3,7 +3,7 @@ rule align:
         unpack(get_fq),
         index="resources/star_genome",
     output:
-        "results/star/{sample}/Aligned.sortedByCoord.out.bam"
+        "results/star/{sample}/Aligned.sortedByCoord.out.bam",
     log:
         "results/star/{sample}.log",
     params:
