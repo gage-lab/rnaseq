@@ -11,12 +11,21 @@ Alignment and quantification pipeline for single-end or paired-end Illumina RNA-
 
 ## Coming soon
 
-1. tetranscripts for quantification
-2. handling of STAR parameters depending on strandedness of sequencing data
+1. handling of STAR parameters depending on strandedness of sequencing data
+2. handling of single-cell RNA-seq data
 
-## Testing
+## Development tips
+
+Please run the following before merging to the main branch
 
 ```bash
+# enforce code style
+snakefmt .
+
+# run lint checks
+snakemake --lint
+
+# test pipeline
 snakemake \
    all \
    --cores 1 \
