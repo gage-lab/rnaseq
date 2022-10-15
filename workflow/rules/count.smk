@@ -8,7 +8,8 @@ rule tetranscripts_count:
         directory("results/TEcount/{sample}"),
     conda:
         "../envs/tetranscripts.yml"
-    shadow: "shallow"
+    shadow:
+        "shallow"
     log:
         "results/TEcount/{sample}/Log.out",
     shell:
