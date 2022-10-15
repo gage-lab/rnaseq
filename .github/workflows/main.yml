@@ -38,7 +38,8 @@ jobs:
       - Formatting
     steps:
     - uses: actions/checkout@v2
-
+      with:
+        submodules: recursive
     - name: Test workflow
       uses: snakemake/snakemake-github-action@v1.24.0
       with:
