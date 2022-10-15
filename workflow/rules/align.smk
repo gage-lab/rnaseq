@@ -21,7 +21,7 @@ rule samtools_index:
     input:
         rules.star.output.aln,
     output:
-        rules.star.output.aln + ".bai",
+        f"{rules.star.output.aln}.bai",
     log:
         "results/star/{sample}/samtools_index.log",
     params:

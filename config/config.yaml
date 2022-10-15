@@ -11,6 +11,7 @@ ref:
   #   - Homo_sapiens: hg38
   #   - Mus_musculus: mm39
   build: hg38
+  region: 
 
 params:
   tetranscripts_count: ""
