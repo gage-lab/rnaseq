@@ -6,12 +6,15 @@ rule tetranscripts_count:
         rmsk=rules.get_rmsk.output,
     output:
         directory("results/TEcount/{sample}"),
-    container:
-        "docker://mhammelllab/tetranscripts:2.2.3"
+    conda:
+        "../envs/tetranscripts.yml"
+    shadow: "shallow"
     log:
-        "results/TEcount/{sample}.log",
+        "results/TEcount/{sample}/Log.out",
     shell:
         """
         mkdir -p {output}
-        TEcount -b {input.bam} --GTF {input.gencode} --TE {input.rmsk} --sortByPos --outdir {output} 2> {log}   
+        TEcount --sortByPos --verbose 3 \
+            -b {input.bam} --GTF {input.gencode} --TE {input.rmsk} \
+            --outdir {output} 2> {log}   
         """
