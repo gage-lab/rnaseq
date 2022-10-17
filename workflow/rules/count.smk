@@ -14,6 +14,7 @@ rule tetranscripts_count:
         "results/TEcount/{sample}.log",
     params:
         mode=config["tecount"]["mode"],
+        strandedness=get_strandedness,
     shell:
         """
         mkdir -p {output}
@@ -21,6 +22,7 @@ rule tetranscripts_count:
             -b {input.bam} \
             --GTF {input.gencode} --TE {input.rmsk} \
             --mode {params.mode} \
+            --stranded {params.strandedness} \
             --sortByPos --verbose 3 \
             --outdir {output} 2> {log}   
         """

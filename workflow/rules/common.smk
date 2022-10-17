@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 samples = (
     pd.read_csv(config["samples"], sep="\t", dtype={"sample_name": str})
@@ -71,3 +72,15 @@ def get_fq(wildcards):
         return {"fq1": f"{s.fq1}"}
     else:
         return {"fq1": f"{s.fq1}", "fq2": f"{s.fq2}"}
+
+
+def get_strandedness(wildcards):
+    s = samples.loc[(wildcards.sample), ["strandedness"]]["strandedness"]
+    if np.isnan(s) or s == "unstranded":
+        return "no"
+    elif s == "forward":
+        return "forward"
+    elif s == "reverse":
+        return "reverse"
+    else:
+        raise ValueError("Invalid strandedness value")
