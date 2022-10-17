@@ -9,9 +9,7 @@ rule star:
     log:
         "results/star/{sample}/Log.err",
     params:
-        extra="--outSAMtype BAM SortedByCoordinate --sjdbGTFfile {}".format(
-            rules.get_gencode.output
-        ),
+        extra=config["star"]["extra"],
     threads: 8
     wrapper:
         "v1.16.0/bio/star/align"

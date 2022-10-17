@@ -13,5 +13,5 @@ ref:
   build: hg38
   region: 
 
-params:
-  tetranscripts_count: ""
+# options are "all" or "one"
+multimappers: "all"

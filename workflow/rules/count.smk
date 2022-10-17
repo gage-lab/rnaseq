@@ -11,11 +11,16 @@ rule tetranscripts_count:
     shadow:
         "shallow"
     log:
-        "results/TEcount/{sample}/Log.out",
+        "results/TEcount/{sample}.log",
+    params:
+        mode=config["tecount"]["mode"],
     shell:
         """
         mkdir -p {output}
-        TEcount --sortByPos --verbose 3 \
-            -b {input.bam} --GTF {input.gencode} --TE {input.rmsk} \
+        TEcount \
+            -b {input.bam} \
+            --GTF {input.gencode} --TE {input.rmsk} \
+            --mode {params.mode} \
+            --sortByPos --verbose 3 \
             --outdir {output} 2> {log}   
         """

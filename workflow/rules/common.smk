@@ -6,7 +6,7 @@ samples = (
     .sort_index()
 )
 
-
+# choose reference genome fasta and gene annotation file
 if config["ref"]["region"] == "chr21":
     genome = {
         "fa": ".test/ngs-test-data/ref/genome.chr21.fa",
@@ -16,6 +16,41 @@ if config["ref"]["region"] == "chr21":
 elif config["ref"]["region"] == None:
     genome = {"fa": "resources/genome.fa", "fai": "resources/genome.fa.fai"}
     genes = "resources/gencode.gtf"
+else:
+    raise ValueError("Invalid reference genome region")
+
+# choose STAR and TEcount parameters (STAR params adapted from ENCODE parameters https://github.com/ENCODE-DCC/rna-seq-pipeline/blob/dev/src/align.py)
+config["star"], config["tecount"] = {}, {}
+config["star"][
+    "extra"
+] = f"""--outFilterMultimapNmax 100 \
+    --winAnchorMultimapNmax 200 \
+    --outMultimapperOrder Random \
+    --runRNGseed 777 \
+    --alignSJoverhangMin 8 \
+    --alignSJDBoverhangMin 1 \
+    --outFilterMismatchNmax 999 \
+    --outFilterMismatchNoverReadLmax 0.04 \
+    --alignIntronMin 20 \
+    --alignIntronMax 1000000 \
+    --alignMatesGapMax 1000000 \
+    --outSAMheaderHD @HD VN:1.4 SO:coordinate \
+    --outSAMunmapped Within \
+    --outFilterType BySJout \
+    --outSAMattributes NH HI AS NM MD \
+    --outSAMstrandField intronMotif \
+    --outSAMtype BAM SortedByCoordinate \
+    --sjdbScore 1 \
+    --sjdbGTFfile {genes}"""
+
+if config["multimappers"] == "all":
+    config["tecount"]["mode"] = "multi"
+    config["star"]["extra"] += " --outSAMmultNmax -1"
+elif config["multimappers"] == "one":
+    config["tecount"]["mode"] = "uniq"
+    config["star"]["extra"] += " --outSAMmultNmax 1"
+else:
+    raise ValueError("Invalid value for multimappers")
 
 
 def is_paired_end(sample):
