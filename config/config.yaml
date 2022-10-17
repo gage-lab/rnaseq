@@ -13,5 +13,6 @@ ref:
   build: hg38
   region: 
 
-# options are "all" or "one"
-multimappers: "all"
+# options are "multi" or "uniq"
+tecount:
+  mode: "uniq"

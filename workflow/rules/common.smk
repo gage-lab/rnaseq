@@ -20,7 +20,7 @@ else:
     raise ValueError("Invalid reference genome region")
 
 # choose STAR and TEcount parameters (STAR params adapted from ENCODE parameters https://github.com/ENCODE-DCC/rna-seq-pipeline/blob/dev/src/align.py)
-config["star"], config["tecount"] = {}, {}
+config["star"] = {}
 config["star"][
     "extra"
 ] = f"""--outFilterMultimapNmax 100 \
@@ -43,11 +43,9 @@ config["star"][
     --sjdbScore 1 \
     --sjdbGTFfile {genes}"""
 
-if config["multimappers"] == "all":
-    config["tecount"]["mode"] = "multi"
+if config["tecount"]["mode"] == "multi":
     config["star"]["extra"] += " --outSAMmultNmax -1"
-elif config["multimappers"] == "one":
-    config["tecount"]["mode"] = "uniq"
+elif config["tecount"]["mode"] == "uniq":
     config["star"]["extra"] += " --outSAMmultNmax 1"
 else:
     raise ValueError("Invalid value for multimappers")

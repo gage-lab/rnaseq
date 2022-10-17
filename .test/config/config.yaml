@@ -7,4 +7,5 @@ ref:
   build: hg38
   region: chr21
 
-multimappers: "all"
+tecount:
+  mode: "uniq"
