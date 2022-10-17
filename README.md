@@ -12,8 +12,9 @@ Alignment and quantification pipeline for single-end or paired-end Illumina RNA-
 
 ## Coming soon
 
-1. handling of STAR parameters depending on strandedness of sequencing data
-2. handling of single-cell RNA-seq data
+1. handling of single-cell RNA-seq data
+2. merging counts from multiple samples for downstream analysis
+3. FASTQC, RNASEQC, and MultiQC reports
 
 ## Development tips
 
@@ -29,7 +30,7 @@ snakemake --lint
 # test pipeline
 snakemake \
    all \
-   --cores 1 \
+   --cores 3 \
    --use-conda \
    --show-failed-logs \
    --conda-cleanup-pkgs cache \
