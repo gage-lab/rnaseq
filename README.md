@@ -1,6 +1,6 @@
 # Gage Lab RNA-seq pipeline
 
-![Tests](https://github.com/gage-lab/rnaseq/actions/workflows/main.yml/badge.svg)
+[![Tests](https://github.com/gage-lab/rnaseq/actions/workflows/main.yml/badge.svg)](https://github.com/gage-lab/rnaseq/actions/workflows/main.yml)
 [![Snakemake](https://img.shields.io/badge/snakemake-≥7.16.0-brightgreen.svg)](https://snakemake.github.io)
 
 Alignment and quantification pipeline for single-end or paired-end Illumina RNA-seq reads
