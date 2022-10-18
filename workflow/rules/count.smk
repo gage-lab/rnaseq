@@ -5,24 +5,41 @@ rule tetranscripts_count:
         gencode=rules.get_gencode.output,
         rmsk=rules.get_rmsk.output,
     output:
-        directory("results/TEcount/{sample}"),
+        "results/TEcount/{sample}/TEtranscripts_out.cntTable",
     conda:
         "../envs/tetranscripts.yml"
     shadow:
         "shallow"
     log:
-        "results/TEcount/{sample}.log",
+        "results/TEcount/{sample}/Log.err",
     params:
         mode=config["tecount"]["mode"],
         strandedness=get_strandedness,
     shell:
         """
-        mkdir -p {output}
+        mkdir -p $(dirname {output})
         TEcount \
             -b {input.bam} \
             --GTF {input.gencode} --TE {input.rmsk} \
             --mode {params.mode} \
             --stranded {params.strandedness} \
             --sortByPos --verbose 3 \
-            --outdir {output} 2> {log}   
+            --outdir $(dirname {output}) 2> {log}   
         """
+
+
+rule aggregate_counts:
+    input:
+        expand(rules.tetranscripts_count.output, sample=samples["sample_name"]),
+    output:
+        "results/TEtranscripts_out.cntTable",
+    log:
+        "results/TEtranscripts_out.cntTable.log",
+    run:
+        for i, f in enumerate(input):
+            df = pd.read_csv(
+                f, sep="\t", index_col=0, header=0, names=[samples["sample_name"][i]]
+            )
+            df_all = df if i == 0 else df_all.add(df, fill_value=0)
+        with open(output[0], "w") as f:
+            df_all.to_csv(f, sep="\t")

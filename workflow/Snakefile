@@ -15,7 +15,4 @@ include: "rules/count.smk"
 
 rule all:
     input:
-        expand(
-            rules.tetranscripts_count.output,
-            sample=samples["sample_name"],
-        ),
+        rules.aggregate_counts.output,
