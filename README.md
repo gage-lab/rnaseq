@@ -13,8 +13,9 @@ Alignment and quantification pipeline for single-end or paired-end Illumina RNA-
 ## Coming soon
 
 1. handling of single-cell RNA-seq data
-2. merging counts from multiple samples for downstream analysis
-3. FASTQC, RNASEQC, and MultiQC reports
+2. FASTQC, RNASEQC, and MultiQC reports
+3. Downloading data from SRA/ENA
+4. Differential expression analysis
 
 ## Development tips
 
