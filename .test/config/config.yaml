@@ -7,5 +7,10 @@ ref:
   build: hg38
   region: chr21
 
+trimming:
+  activate: True
+  cutadapt-pe: ""
+  cutadapt-se: ""
+
 tecount:
   mode: "uniq"

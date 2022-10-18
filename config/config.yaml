@@ -13,6 +13,11 @@ ref:
   build: hg38
   region: 
 
+trimming:
+  activate: False
+  cutadapt-pe: ""
+  cutadapt-se: ""
+
 # options are "multi" or "uniq"
 tecount:
   mode: "uniq"
