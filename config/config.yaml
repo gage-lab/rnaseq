@@ -3,14 +3,16 @@ samples: config/samples.tsv
 
 
 ref:
-  # AWS iGenomes species name: 
-  # OPTIONS: Homo_sapiens, Mus_musculus
-  species: Homo_sapiens
+  # Ensembl species name: 
+  # OPTIONS: homo_sapiens, mus_musculus
+  species: homo_sapiens
   # Genome build
   # OPTIONS:
-  #   - Homo_sapiens: hg38
-  #   - Mus_musculus: mm39
-  build: hg38
+  #   - Homo_sapiens: GRCh38
+  #   - Mus_musculus: GRCm38
+  build: GRCh38
+  # Ensembl release (make sure to take one where snpeff data is available, check 'snpEff databases' output)
+  release: 107
   region: 
 
 trimming:

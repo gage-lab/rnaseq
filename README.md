@@ -7,8 +7,10 @@ Alignment and quantification pipeline for single-end or paired-end Illumina RNA-
 
 ## Current features
 
-1. Downloading reference genome, STAR index, and GENCODE annotation
-2. Read alignment with STAR, flexible to single-end or paired-end reads
+1. Downloading reference genome, gene annotation, and TE annotation
+2. Generating STAR index
+3. Read alignment with STAR, flexible to single-end or paired-end reads
+4. Quantification of gene and TE subfamily transcript abundance with TEtranscripts
 
 ## Coming soon
 

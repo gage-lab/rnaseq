@@ -3,8 +3,9 @@ samples: .test/config/samples.tsv
 
 
 ref:
-  species: Homo_sapiens
-  build: hg38
+  species: homo_sapiens
+  build: GRCh38
+  release: 107
   region: chr21
 
 trimming:

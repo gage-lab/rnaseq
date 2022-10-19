@@ -16,7 +16,7 @@ if config["ref"]["region"] == "chr21":
     genes = ".test/ngs-test-data/ref/annotation.chr21.gtf"
 elif config["ref"]["region"] == None:
     genome = {"fa": "resources/genome.fa", "fai": "resources/genome.fa.fai"}
-    genes = "resources/gencode.gtf"
+    genes = "resources/genes.gtf"
 else:
     raise ValueError("Invalid reference genome region")
 
@@ -98,7 +98,7 @@ def get_fq(wildcards):
 
 
 def get_strandedness(wildcards):
-    s = samples.loc[(wildcards.sample), ["strandedness"]]["strandedness"]
+    s = samples.loc[(wildcards.sample)]["strandedness"]
     if np.isnan(s) or s == "unstranded":
         return "no"
     elif s == "forward":

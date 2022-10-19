@@ -2,7 +2,7 @@ rule tetranscripts_count:
     input:
         bam=rules.star.output.aln,
         bai=rules.samtools_index.output,
-        gencode=rules.get_gencode.output,
+        genes=rules.get_genes.output,
         rmsk=rules.get_rmsk.output,
     output:
         "results/TEcount/{sample}/TEtranscripts_out.cntTable",
@@ -20,7 +20,7 @@ rule tetranscripts_count:
         mkdir -p $(dirname {output})
         TEcount \
             -b {input.bam} \
-            --GTF {input.gencode} --TE {input.rmsk} \
+            --GTF {input.genes} --TE {input.rmsk} \
             --mode {params.mode} \
             --stranded {params.strandedness} \
             --sortByPos --verbose 3 \
