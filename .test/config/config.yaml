@@ -1,6 +1,6 @@
 # path or URL to sample sheet (TSV format, columns: sample, condition, ...)
 samples: .test/config/samples.tsv
-
+outdir: results
 
 ref:
   species: homo_sapiens

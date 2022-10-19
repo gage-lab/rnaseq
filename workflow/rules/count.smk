@@ -5,13 +5,13 @@ rule tetranscripts_count:
         genes=rules.get_genes.output,
         rmsk=rules.get_rmsk.output,
     output:
-        "results/TEcount/{sample}/TEtranscripts_out.cntTable",
+        f"{config['outdir']}/TEcount/{{sample}}/TEtranscripts_out.cntTable",
     conda:
         "../envs/tetranscripts.yml"
     shadow:
         "shallow"
     log:
-        "results/TEcount/{sample}/Log.err",
+        f"{config['outdir']}/TEcount/{{sample}}/Log.err",
     params:
         mode=config["tecount"]["mode"],
         strandedness=get_strandedness,
@@ -32,9 +32,9 @@ rule aggregate_counts:
     input:
         expand(rules.tetranscripts_count.output, sample=samples["sample_name"]),
     output:
-        "results/TEtranscripts_out.cntTable",
+        f"{config['outdir']}/TEtranscripts_out.cntTable",
     log:
-        "results/TEtranscripts_out.cntTable.log",
+        f"{config['outdir']}/TEtranscripts_out.cntTable.log",
     run:
         for i, f in enumerate(input):
             df = pd.read_csv(

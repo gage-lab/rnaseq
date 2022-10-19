@@ -84,11 +84,13 @@ def get_fq(wildcards):
     s = samples.loc[(wildcards.sample), ["fq1", "fq2"]].dropna()
     if config["trimming"]["activate"]:
         if not is_paired_end(wildcards.sample):
-            return {"fq1": f"results/trimmed/{wildcards.sample}_trimmed.fq.gz"}
+            return {
+                "fq1": f"{config['outdir']}/trimmed/{wildcards.sample}_trimmed.fq.gz"
+            }
         else:
             return {
-                "fq1": f"results/trimmed/{wildcards.sample}_val_1.fq.gz",
-                "fq2": f"results/trimmed/{wildcards.sample}_val_2.fq.gz",
+                "fq1": f"{config['outdir']}/trimmed/{wildcards.sample}_val_1.fq.gz",
+                "fq2": f"{config['outdir']}/trimmed/{wildcards.sample}_val_2.fq.gz",
             }
     else:
         if not is_paired_end(wildcards.sample):

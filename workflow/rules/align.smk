@@ -3,11 +3,9 @@ rule star:
         unpack(get_fq),
         idx=rules.star_index.output,
     output:
-        aln="results/star/{sample}/Aligned.sortedByCoord.out.bam",
-        log="results/star/{sample}/Log.out",
-        log_final="results/star/{sample}/Log.final.out",
-    log:
-        "results/star/{sample}/Log.err",
+        aln=f"{config['outdir']}/star/{{sample}}/Aligned.sortedByCoord.out.bam",
+        log=f"{config['outdir']}/star/{{sample}}/Log.out",
+        log_final=f"{config['outdir']}/star/{{sample}}/Log.final.out",
     params:
         extra=config["star"]["extra"],
     threads: 8
@@ -21,7 +19,7 @@ rule samtools_index:
     output:
         f"{rules.star.output.aln}.bai",
     log:
-        "results/star/{sample}/samtools_index.log",
+        f"{config['outdir']}/star/{{sample}}/samtools_index.log",
     params:
         extra="",  # optional params string
     threads: 4  # This value - 1 will be sent to -@
