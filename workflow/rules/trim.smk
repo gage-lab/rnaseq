@@ -1,45 +1,47 @@
-rule cutadapt_pipe:
+rule trim_galore_pe:
     input:
-        get_cutadapt_pipe_input,
+        get_trim_input,
     output:
-        pipe("results/pipe/cutadapt/{sample}.{fq}.{ext}"),
+        "results/trimmed/{sample}_val_1.fq.gz",
+        "results/trimmed/{sample}_val_2.fq.gz",
     log:
-        "results/pipe/cutadapt/{sample}.{fq}.{ext}.log",
-    wildcard_constraints:
-        ext=r"fastq|fastq\.gz",
-    threads: 0
+        "results/trimmed/{sample}.log",
+    params:
+        extra="-q 20",
+    conda:
+        "../envs/trim_galore.yml"
+    threads: 4
     shell:
-        "cat {input} > {output} 2> {log}"
+        """
+        trim_galore --paired \
+            --gzip\
+            {params.extra} \
+            --cores {threads} \
+            --output_dir $(dirname {output[0]}) \
+            --basename {wildcards.sample} \
+            {input} 2> {log}
+        """
 
 
-rule cutadapt_pe:
+rule trim_galore_se:
     input:
-        get_cutadapt_input,
+        get_trim_input,
     output:
-        fastq1="results/cutadapt/{sample}_R1.fastq.gz",
-        fastq2="results/cutadapt/{sample}_R2.fastq.gz",
-        qc="results/cutadapt/{sample}.paired.qc.txt",
+        "results/trimmed/{sample}_trimmed.fq.gz",
     log:
-        "results/cutadapt/{sample}.log",
+        "results/trimmed/{sample}.log",
     params:
-        others=config["trimming"]["cutadapt-pe"],
-        adapters=lambda w: str(samples.loc[w.sample].loc["adapters"]),
-    threads: 8
-    wrapper:
-        "v1.17.1/bio/cutadapt/pe"
-
-
-rule cutadapt_se:
-    input:
-        get_cutadapt_input,
-    output:
-        fastq="results/cutadapt/{sample}.fastq.gz",
-        qc="results/cutadapt/{sample}.single.qc.txt",
-    log:
-        "results/cutadapt/{sample}.log",
-    params:
-        others=config["trimming"]["cutadapt-se"],
-        adapters_r1=lambda w: str(samples.loc[w.sample].loc["adapters"]),
-    threads: 8
-    wrapper:
-        "v1.17.1/bio/cutadapt/se"
+        extra="-q 20 --gzip",
+    conda:
+        "../envs/trim_galore.yml"
+    threads: 4
+    shell:
+        """
+        trim_galore \
+            --gzip \
+            {params.extra} \
+            --cores {threads} \
+            --basename {wildcards.sample} \
+            --output_dir $(dirname {output[0]}) \
+            {input} 2> {log}
+        """

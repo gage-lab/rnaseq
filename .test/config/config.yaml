@@ -9,8 +9,6 @@ ref:
 
 trimming:
   activate: True
-  cutadapt-pe: ""
-  cutadapt-se: ""
 
 tecount:
   mode: "uniq"

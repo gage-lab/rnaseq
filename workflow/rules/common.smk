@@ -64,9 +64,9 @@ def is_paired_end(sample):
     return all_paired
 
 
-def get_cutadapt_input(wildcards):
+def get_trim_input(wildcards):
     sample_units = samples.loc[wildcards.sample]
-    sample_name = sample_units.sample_name
+    sample_name = sample_units["sample_name"]
     if sample_units["fq1"].endswith("gz"):
         ending = ".gz"
     else:
@@ -74,30 +74,21 @@ def get_cutadapt_input(wildcards):
 
     if pd.isna(sample_units["fq2"]):
         # single end local sample
-        return f"results/pipe/cutadapt/{sample_name}.fq1.fastq{ending}"
+        return [sample_units.fq1]
     else:
         # paired end local sample
-        return expand(
-            f"results/pipe/cutadapt/{sample_name}.{{read}}.fastq{ending}",
-            read=["fq1", "fq2"],
-        )
-
-
-def get_cutadapt_pipe_input(wildcards):
-    files = samples.loc[wildcards.sample][wildcards.fq]
-    assert len(files) > 0
-    return files
+        return [sample_units.fq1, sample_units.fq2]
 
 
 def get_fq(wildcards):
     s = samples.loc[(wildcards.sample), ["fq1", "fq2"]].dropna()
     if config["trimming"]["activate"]:
         if not is_paired_end(wildcards.sample):
-            return {"fq1": "results/cutadapt/{sample}.fastq.gz".format(**wildcards)}
+            return {"fq1": f"results/trimmed/{wildcards.sample}_trimmed.fq.gz"}
         else:
             return {
-                "fq1": "results/cutadapt/{sample}_R1.fastq.gz".format(**wildcards),
-                "fq2": "results/cutadapt/{sample}_R2.fastq.gz".format(**wildcards),
+                "fq1": f"results/trimmed/{wildcards.sample}_val_1.fq.gz",
+                "fq2": f"results/trimmed/{wildcards.sample}_val_2.fq.gz",
             }
     else:
         if not is_paired_end(wildcards.sample):
