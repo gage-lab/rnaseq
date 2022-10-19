@@ -37,6 +37,7 @@ rule star_index:
     threads: 8
     params:
         extra="",
+        gtf=rules.get_genes.output,
     log:
         "resources/star_index.log",
     wrapper:
