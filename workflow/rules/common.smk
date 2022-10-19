@@ -100,8 +100,8 @@ def get_fq(wildcards):
 
 
 def get_strandedness(wildcards):
-    s = samples.loc[(wildcards.sample)]["strandedness"]
-    if np.isnan(s) or s == "unstranded":
+    s = samples.loc[wildcards.sample]["strandedness"]
+    if pd.isnull(s) or s == "unstranded":
         return "no"
     elif s == "forward":
         return "forward"
