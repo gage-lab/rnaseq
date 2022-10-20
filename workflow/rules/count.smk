@@ -42,4 +42,4 @@ rule aggregate_counts:
             )
             df_all = df if i == 0 else df_all.add(df, fill_value=0)
         with open(output[0], "w") as f:
-            df_all.to_csv(f, sep="\t")
+            df_all.to_csv(f, sep="\t", index_label = "id")
