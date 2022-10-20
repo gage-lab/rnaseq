@@ -16,4 +16,4 @@ include: "rules/count.smk"
 
 rule all:
     input:
-        rules.aggregate_counts.output,
+        rules.prep_deseq.output,
