@@ -70,6 +70,7 @@ read_tetranscripts <- function(counts, coldata, genes, rmsk, subfamily = "L1HS",
 		dplyr::arrange(feature_id) # sort by feature id
 
 	message(glue("Removing {sum(!counts$feature_id %in% rownames(annot))}/{nrow(counts)} counted features not in annotation..."))
+	message(glue("{sum(counts$feature_id %in% rownames(annot))} counted features remain..."))
 	counts = counts %>%
 		dplyr::filter(feature_id %in% rownames(annot)) %>% # only include features in annotation
 		tibble::column_to_rownames("feature_id") %>%
