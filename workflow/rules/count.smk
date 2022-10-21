@@ -42,17 +42,18 @@ rule aggregate_counts:
             )
             df_all = df if i == 0 else df_all.add(df, fill_value=0)
         with open(output[0], "w") as f:
-            df_all.to_csv(f, sep="\t", index_label = "id")
+            df_all.to_csv(f, sep="\t", index_label="feature_id")
+
 
 rule prep_deseq:
     input:
-        counts = rules.aggregate_counts.output,
-        rmsk = rules.get_rmsk.output,
-        genes = rules.get_genes.output,
-        coldata = config["samples"],
+        counts=rules.aggregate_counts.output,
+        rmsk=rules.get_rmsk.output,
+        genes=rules.get_genes.output,
+        coldata=config["samples"],
     output:
         f"{config['outdir']}/dds.rds",
-    conda: 
+    conda:
         "../envs/deseq.yml"
     script:
         "../scripts/prep_deseq.R"
