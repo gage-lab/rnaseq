@@ -17,7 +17,7 @@ options(readr.num_threads = snakemake@threads, readr.show_col_types = FALSE)
 #' 
 #' @param coldata, a data.frame with the following columns: files, names, ...
 #' @param deseq.obj, a logical to indicate whether to return data in DESeq2 format
-read_tetranscripts <- function(counts, coldata, genes, rmsk, subfamily = "L1HS", deseq.obj = TRUE, 
+read_tetranscripts <- function(counts, coldata, genes, rmsk, subfamily = "L1HS", 
 		biotypes = c("protein_coding", "lncRNA", "antisense", "IG_C_gene", 
 	"IG_D_gene", "IG_J_gene", "IG_LV_gene", "IG_V_gene", "IG_V_pseudogene", 
 	"IG_J_pseudogene", "IG_C_pseudogene", "TR_C_gene", "TR_D_gene", "TR_J_gene",
@@ -74,15 +74,16 @@ read_tetranscripts <- function(counts, coldata, genes, rmsk, subfamily = "L1HS",
 	counts = counts %>%
 		dplyr::filter(feature_id %in% rownames(annot)) %>% # only include features in annotation
 		tibble::column_to_rownames("feature_id") %>%
+		dplyr::select(rownames(samples)) %>% # only include samples in coldata
 		as.matrix()
 
-	stopifnot(dim(counts)[1] == dim(annot)[1])
-	stopifnot(dim(counts)[2] == dim(samples)[1])
+	stopifnot(identical(rownames(counts),rownames(annot)))
+	stopifnot(identical(colnames(counts),rownames(samples)))
 
 	# make matrix of gene lengths for each sample
 	lengths = data.frame(row.names = rownames(annot))
 	for (sample in colnames(counts)){
-		lengths[sample] <- annot$length
+		lengths[[sample]] <- annot$length
 	}
 
 	message(glue("Creating DESeq2 object..."))
