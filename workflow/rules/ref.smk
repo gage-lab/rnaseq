@@ -33,11 +33,10 @@ rule star_index:
     input:
         fasta=rules.get_genome.output,
     output:
-        directory("resources/star_genome"),
+        genome["index"],
     threads: 8
     params:
-        extra="",
-        gtf=rules.get_genes.output,
+        extra="",  # optional parameters
     log:
         "resources/star_index.log",
     wrapper:

@@ -12,10 +12,15 @@ if config["ref"]["region"] == "chr21":
     genome = {
         "fa": ".test/ngs-test-data/ref/genome.chr21.fa",
         "fai": ".test/ngs-test-data/ref/genome.chr21.fa.fai",
+        "index": directory("resources/star_genome_chr21"),
     }
     genes = ".test/ngs-test-data/ref/annotation.chr21.gtf"
 elif config["ref"]["region"] == None:
-    genome = {"fa": "resources/genome.fa", "fai": "resources/genome.fa.fai"}
+    genome = {
+        "fa": "resources/genome.fa",
+        "fai": "resources/genome.fa.fai",
+        "index": directory("resources/star_genome"),
+    }
     genes = "resources/genes.gtf"
 else:
     raise ValueError("Invalid reference genome region")
