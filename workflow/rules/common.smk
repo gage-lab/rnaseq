@@ -104,6 +104,16 @@ def get_star_input(wildcards):
             return {"fq1": f"{s.fq1}", "fq2": f"{s.fq2}"}
 
 
+def get_bam(wildcards):
+    s = samples.loc[wildcards.sample].dropna()
+    if "bam" in s.index:
+        return s["bam"]
+    else:
+        return (
+            f"{config['outdir']}/star/{wildcards.sample}/Aligned.sortedByCoord.out.bam"
+        )
+
+
 def get_strandedness(wildcards):
     s = samples.loc[wildcards.sample]["strandedness"]
     if pd.isnull(s) or s == "unstranded":

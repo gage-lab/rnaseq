@@ -15,11 +15,11 @@ rule star:
 
 rule samtools_index:
     input:
-        rules.star.output.aln,
+        get_bam,
     output:
-        f"{rules.star.output.aln}.bai",
+        f"{config['outdir']}/samtools_index/{{sample}}.bam.bai",
     log:
-        f"{config['outdir']}/star/{{sample}}/samtools_index.log",
+        f"{config['outdir']}/samtools_index/{{sample}}/samtools_index.log",
     params:
         extra="",  # optional params string
     threads: 4  # This value - 1 will be sent to -@

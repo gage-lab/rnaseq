@@ -1,6 +1,6 @@
 rule tetranscripts_count:
     input:
-        bam=rules.star.output.aln,
+        bam=get_bam,
         bai=rules.samtools_index.output,
         genes=rules.get_genes.output,
         rmsk=rules.get_rmsk.output,
