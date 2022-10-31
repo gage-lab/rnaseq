@@ -1,6 +1,6 @@
 rule star:
     input:
-        unpack(get_fq),
+        unpack(get_star_input),
         idx=rules.star_index.output,
     output:
         aln=f"{config['outdir']}/star/{{sample}}/Aligned.sortedByCoord.out.bam",

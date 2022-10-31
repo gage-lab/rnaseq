@@ -85,7 +85,7 @@ def get_trim_input(wildcards):
         return [sample_units.fq1, sample_units.fq2]
 
 
-def get_fq(wildcards):
+def get_star_input(wildcards):
     s = samples.loc[(wildcards.sample), ["fq1", "fq2"]].dropna()
     if config["trimming"]["activate"]:
         if not is_paired_end(wildcards.sample):
