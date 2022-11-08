@@ -12,6 +12,7 @@ include: "rules/ref.smk"
 include: "rules/trim.smk"
 include: "rules/align.smk"
 include: "rules/count.smk"
+include: "rules/qc.smk" # should this be here or replace w line before? 
 
 
 rule all:
