@@ -5,19 +5,26 @@
 # Create a DESeq2 object from TEcount output
 
 # Load packages and Set Options ------------------------------------------------------
-suppressPackageStartupMessages(library(tidyverse))
-suppressPackageStartupMessages(library(rtracklayer))
-suppressPackageStartupMessages(library(GenomicFeatures))
-suppressPackageStartupMessages(library(DESeq2))
-suppressPackageStartupMessages(library(glue))
+suppressPackageStartupMessages({
+	library(tidyverse)
+	library(rtracklayer)
+	library(GenomicFeatures)
+	library(DESeq2)
+	library(glue)
+})
 options(readr.num_threads = snakemake@threads, readr.show_col_types = FALSE)
 
 #' Create a DESeq2 object from
 #' TEcount .cntTable file, sample metadata, TE annotation, and gene annotation
 #' 
-#' @param coldata, a data.frame with the following columns: files, names, ...
-#' @param deseq.obj, a logical to indicate whether to return data in DESeq2 format
-read_tetranscripts <- function(counts, coldata, genes, rmsk, subfamily = "L1HS", 
+#' @param counts 
+#' @param genes 
+#' @param rmsk 
+#' @param coldata 
+#' @param subfamily 
+#' @param biotypes
+#'  
+read_tetranscripts <- function(counts, coldata, genes, rmsk, subfamily = c("L1HS", "L1PA2", "L1PA3","L1PA4","L1PA5","L1PA6"), 
 		biotypes = c("protein_coding", "lncRNA", "antisense", "IG_C_gene", 
 	"IG_D_gene", "IG_J_gene", "IG_LV_gene", "IG_V_gene", "IG_V_pseudogene", 
 	"IG_J_pseudogene", "IG_C_pseudogene", "TR_C_gene", "TR_D_gene", "TR_J_gene",
@@ -45,12 +52,12 @@ read_tetranscripts <- function(counts, coldata, genes, rmsk, subfamily = "L1HS",
 		dplyr::mutate(feature_id = paste(gene_id, family_id, class_id, sep = ":"), biotype = "te") %>%
 		dplyr::rename(subfamily_id = gene_id) %>%
 		dplyr::select(feature_id, subfamily_id, family_id, class_id, biotype) %>%
-		distinct()
+		dplyr::distinct()
 
-	message(glue("Only including {subfamily} subfamily from TE annotations..."))
-	if (subfamily == "L1HS"){
+	message(glue("Only including {paste(subfamily, collapse = ',')} subfamilies from TE annotations..."))
+	if (!is.null(subfamily)){
 		rmsk = rmsk %>% 
-			dplyr::filter(subfamily_id == subfamily) %>% 
+			dplyr::filter(subfamily_id %in% subfamily) %>% 
 			dplyr::mutate(length = 6000)
 	}
 
