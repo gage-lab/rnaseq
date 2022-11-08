@@ -88,6 +88,47 @@ def get_trim_input(wildcards):
         return [sample_units.fq1, sample_units.fq2]
 
 
+# TODO
+#
+# 1. trimmed file names
+# 2. paths in config
+def get_fastqc_input(wildcards):
+    if "val" in wildcards.sample:
+        return (
+            f"{config['outdir']}/trimmed/{{wildcards.sample}}_val_1.fq.gz",
+            f"{config['outdir']}/trimmed/{{wildcards.sample}}_val_2.fq.gz",
+        )
+    if "trimmed" in wildcards.sample:
+        return (f"{config['outdir']}/trimmed/{{wildcards.sample}}_trimmed.fq.gz",)
+
+    sample_units = samples.loc[wildcards.sample]
+    sample_name = sample_units["sample_name"]
+    if sample_units["fq1"].endswith("gz"):
+        ending = ".gz"
+    else:
+        ending = ""
+    if pd.isna(sample_units["fq2"]):
+        # single end local sample
+        return [sample_units.fq1]
+    else:
+        # paired end local sample
+        return [sample_units.fq1, sample_units.fq2]
+
+def get_fastqc_trimmed_in(wildcards): 
+    s = samples.loc[(wildcards.sample), ["fq1", "fq2"]].dropna()
+    if config["trimming"]["activate"]:
+        if not is_paired_end(wildcards.sample):
+            return {
+                "fq1": f"{config['outdir']}/trimmed/{wildcards.sample}_trimmed.fq.gz"
+            }
+        else:
+            return {
+                "fq1": f"{config['outdir']}/trimmed/{wildcards.sample}_val_1.fq.gz",
+                "fq2": f"{config['outdir']}/trimmed/{wildcards.sample}_val_2.fq.gz",
+            }
+    else:
+        return None
+
 def get_star_input(wildcards):
     s = samples.loc[(wildcards.sample), ["fq1", "fq2"]].dropna()
     if config["trimming"]["activate"]:
