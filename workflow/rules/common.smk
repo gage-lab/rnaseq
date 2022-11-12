@@ -25,6 +25,9 @@ elif config["ref"]["region"] == None:
 else:
     raise ValueError("Invalid reference genome region")
 
+if config["ref"]["genes"] is not None:
+    genes = config["ref"]["genes"]
+
 # choose STAR and TEcount parameters (STAR params adapted from ENCODE parameters https://github.com/ENCODE-DCC/rna-seq-pipeline/blob/dev/src/align.py)
 config["star"] = {}
 config["star"][
