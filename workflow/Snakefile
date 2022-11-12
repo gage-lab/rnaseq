@@ -9,7 +9,6 @@ configfile: "config/config.yaml"
 
 include: "rules/common.smk"
 include: "rules/ref.smk"
-include: "rules/trim.smk"
 include: "rules/align.smk"
 include: "rules/count.smk"
 

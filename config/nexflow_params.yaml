@@ -1,0 +1,3 @@
+modules:
+  'star_align':
+    args: '--outFilterMultimapNmax 100 --winAnchorMultimapNmax 200 --outSAMmultNmax -1 --outMultimapperOrder Random'

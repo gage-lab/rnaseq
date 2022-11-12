@@ -12,7 +12,7 @@ rule get_genome:
     wrapper:
         "v1.17.1/bio/reference/ensembl-sequence"
 
-
+# TODO: get GENCODE insteaed of Ensembl
 rule get_genes:
     output:
         genes,
