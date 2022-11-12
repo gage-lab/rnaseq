@@ -48,6 +48,7 @@ rule get_rmsk:
         "resources/rmsk.gtf",
     params:
         species=config["ref"]["species"],
+        source=config["ref"]["source"],
         build=config["ref"]["build"],
     conda:
         "../envs/download.yml"
@@ -57,7 +58,7 @@ rule get_rmsk:
         """
         # TODO: update this to get most recent repeatmasker runs
         if [ {params.build} == "GRCh38" ] || [ {params.build} == "GRCm38" ]; then
-            URL="https://labshare.cshl.edu/shares/mhammelllab/www-data/TEtranscripts/TE_GTF/{params.build}_Ensembl_rmsk_TE.gtf.gz"
+            URL="https://labshare.cshl.edu/shares/mhammelllab/www-data/TEtranscripts/TE_GTF/{params.build}_{params.source}_rmsk_TE.gtf.gz"
         else 
             echo "Species and build combination not implemented"; exit 1
         fi
