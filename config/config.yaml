@@ -1,5 +1,5 @@
 # path or URL to sample sheet (TSV format, columns: sample, condition, ...)
-samples: config/samples.tsv
+samples: config/samples.csv
 outdir: results
 
 ref:
@@ -14,9 +14,6 @@ ref:
   # Ensembl release (make sure to take one where snpeff data is available, check 'snpEff databases' output)
   release: 107
   region: 
-
-trimming:
-  activate: False
 
 # options are "multi" or "uniq"
 tecount:

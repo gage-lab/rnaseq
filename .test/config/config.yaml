@@ -1,15 +1,23 @@
 # path or URL to sample sheet (TSV format, columns: sample, condition, ...)
-samples: .test/config/samples.tsv
+samples: .test/config/samples.csv
 outdir: results
 
 ref:
   species: homo_sapiens
+  source: Ensemble
   build: GRCh38
   release: 107
   region: chr21
 
-trimming:
-  activate: True
+nextflow:
+  pipeline: nf-core/rnaseq
+  params-file: .test/config/nextflow_params.yaml
+  aligner: "star_rsem"
+  revision: "3.5"
+  profile: ["docker"]
+  gencode: ""
+  outdir: results
+  multiqc_title: "RNA-seq"
 
 tecount:
   mode: "uniq"
