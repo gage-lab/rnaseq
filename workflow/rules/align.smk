@@ -1,22 +1,21 @@
 rule rnaseq_pipeline:
     input:
-        input=config["rnaseq_samples"],
+        input=config["samples"],
         fasta=rules.get_genome.output,
         gtf=rules.get_genes.output,
         star_index=rules.star_index.output,
     output:
-        star=directory("star_rsem")
-		multiqc="{outdir}/multiqc/star_rsem/{title}_multiqc_report.html".format(
-			outdir=config["outdir"],
-            title=config["nextflow"]["multiqc_title"]
+        multiqc="{outdir}/multiqc/star_rsem/{title}_multiqc_report.html".format(
+            outdir=config["outdir"], title=config["nextflow"]["multiqc_title"]
         ),
     log:
-        "results/nfcore_rnaseq.log",
+        "{outdir}/nfcore_rnaseq.log".format(outdir=config["outdir"]),
     handover: True
+    threads: 8
     params:
         **config["nextflow"],
-    shell:
-	    "nextflow run -profile {params.profile} -params-file {params.params_file} "
+    wrapper:
+        "file://workflow/wrappers/nextflow"
 
 
 rule cleanup_nextflow:

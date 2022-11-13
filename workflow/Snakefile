@@ -10,9 +10,11 @@ configfile: "config/config.yaml"
 include: "rules/common.smk"
 include: "rules/ref.smk"
 include: "rules/align.smk"
-include: "rules/count.smk"
+
+
+# include: "rules/count.smk"
 
 
 rule all:
     input:
-        rules.prep_deseq.output,
+        rules.cleanup_nextflow.output,

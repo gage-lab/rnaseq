@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 samples = (
-    pd.read_csv(config["samples"], sep="\t", dtype={"sample_name": str})
+    pd.read_csv(config["samples"], dtype={"sample_name": str})
     .set_index("sample_name", drop=False)
     .sort_index()
 )
@@ -25,8 +25,9 @@ elif config["ref"]["region"] == None:
 else:
     raise ValueError("Invalid reference genome region")
 
-if config["ref"]["genes"] is not None:
+if "genes" in config["ref"]:
     genes = config["ref"]["genes"]
+
 
 def get_bam(wildcards):
     s = samples.loc[wildcards.sample].dropna()
