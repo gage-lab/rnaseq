@@ -12,10 +12,9 @@ include: "rules/ref.smk"
 include: "rules/trim.smk"
 include: "rules/align.smk"
 include: "rules/count.smk"
-include: "rules/qc.smk"  # should this be here or replace w line before? 
-
+include: "rules/qc.smk"  
 
 rule all:
     input:
-        rules.multiqc.output
-        #rules.prep_deseq.output #expand(rules.fastqc.output, sample=samples['sample_name']) #
+        rules.prep_deseq.output,
+        rules.multiqc.output,
