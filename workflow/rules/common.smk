@@ -25,9 +25,6 @@ elif config["ref"]["region"] == None:
 else:
     raise ValueError("Invalid reference genome region")
 
-if config["ref"]["genes"] is not None:
-    genes = config["ref"]["genes"]
-
 # choose STAR and TEcount parameters (STAR params adapted from ENCODE parameters https://github.com/ENCODE-DCC/rna-seq-pipeline/blob/dev/src/align.py)
 config["star"] = {}
 config["star"][
@@ -71,7 +68,9 @@ def is_paired_end(sample):
     ), f"invalid units for sample {sample}, must be all paired end or all single end"
     return all_paired
 
-
+# TODO
+# 
+# replicate this function with new name
 def get_trim_input(wildcards):
     sample_units = samples.loc[wildcards.sample]
     sample_name = sample_units["sample_name"]
@@ -88,10 +87,12 @@ def get_trim_input(wildcards):
         return [sample_units.fq1, sample_units.fq2]
 
 
-# TODO
+'''
+# not TODO
 #
 # 1. trimmed file names
 # 2. paths in config
+# This is likley outdated 
 def get_fastqc_input(wildcards):
     if "val" in wildcards.sample:
         return (
@@ -112,22 +113,18 @@ def get_fastqc_input(wildcards):
         return [sample_units.fq1]
     else:
         # paired end local sample
-        return [sample_units.fq1, sample_units.fq2]
+        return [sample_units.fq1, sample_units.fq2]'''
 
-def get_fastqc_trimmed_in(wildcards): 
-    s = samples.loc[(wildcards.sample), ["fq1", "fq2"]].dropna()
-    if config["trimming"]["activate"]:
-        if not is_paired_end(wildcards.sample):
-            return {
-                "fq1": f"{config['outdir']}/trimmed/{wildcards.sample}_trimmed.fq.gz"
-            }
-        else:
-            return {
-                "fq1": f"{config['outdir']}/trimmed/{wildcards.sample}_val_1.fq.gz",
-                "fq2": f"{config['outdir']}/trimmed/{wildcards.sample}_val_2.fq.gz",
-            }
+def get_fastqc_trimmed_input(wildcards): 
+    if not is_paired_end(wildcards.sample):
+        return {
+            "fq1": f"{config['outdir']}/trimmed/{wildcards.sample}_trimmed.fq.gz"
+        }
     else:
-        return None
+        return {
+            "fq1": f"{config['outdir']}/trimmed/{wildcards.sample}_val_1.fq.gz",
+            "fq2": f"{config['outdir']}/trimmed/{wildcards.sample}_val_2.fq.gz",
+        }
 
 def get_star_input(wildcards):
     s = samples.loc[(wildcards.sample), ["fq1", "fq2"]].dropna()
@@ -146,6 +143,13 @@ def get_star_input(wildcards):
             return {"fq1": f"{s.fq1}"}
         else:
             return {"fq1": f"{s.fq1}", "fq2": f"{s.fq2}"}
+
+def get_multiqc_input(wildcards):
+    if config["trimming"]["activate"]:
+        return expand(rules.fastqc_trim.output, sample=samples['sample_name'])      
+    else: 
+        return None 
+        
 
 
 def get_bam(wildcards):

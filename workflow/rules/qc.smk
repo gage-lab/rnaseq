@@ -11,10 +11,10 @@
 # 2. path for untrimmed should theoritically be the same
 #
 
-
-rule fastqc_trim:
+'''#outdated? 
+rule fastqc:
     input:
-        get_fastqc_trimmed_in
+        get_fastqc_input,
     output:
         html=f"{config['outdir']}/fastqc/{{sample}}_fastqc.html",
         zip=f"{config['outdir']}/fastqc/{{sample}}_fastqc.zip",
@@ -22,6 +22,20 @@ rule fastqc_trim:
         "--quiet",
     log:
         f"{config['outdir']}/fastqc/{{sample}}.log",
+    threads: 1
+    wrapper:
+        "v1.19.0/bio/fastqc"'''
+
+rule fastqc_trim:
+    input:
+        unpack(get_fastqc_trimmed_input)
+    output:
+        html=f"{config['outdir']}/fastqc/{{sample}}_fastqc_trim.html",
+        zip=f"{config['outdir']}/fastqc/{{sample}}_fastqc_trim.zip"
+    params:
+        "--quiet",
+    log:
+        f"{config['outdir']}/fastqc/{{sample}}_trim.log",
     threads: 1
     wrapper:
         "v1.19.0/bio/fastqc"
@@ -41,31 +55,16 @@ rule fastqc_notrim:
     wrapper:
         "v1.19.0/bio/fastqc"
 
-rule fastqc:
-    input:
-        get_fastqc_input,
-    output:
-        html=f"{config['outdir']}/fastqc/{{sample}}_fastqc.html",
-        zip=f"{config['outdir']}/fastqc/{{sample}}_fastqc.zip",
-    params:
-        "--quiet",
-    log:
-        f"{config['outdir']}/fastqc/{{sample}}.log",
-    threads: 1
-    wrapper:
-        "v1.19.0/bio/fastqc"
-
 rule multiqc:
     input:
+        get_multiqc_input, 
+        expand(rules.star.output, sample=samples['sample_name']),
         expand(rules.fastqc_notrim.output, sample=samples['sample_name'])
-        #rules.fastqc_trim.output,
-        #rules.star.output,
-
     output:
-        f"{config['outdir']}/qc/multiqc.html",
+        f"{config['outdir']}/multi/multiqc.html"
     params:
         extra="",  # Optional: extra parameters for multiqc.
     log:
-        f"{config['outdir']}/qc/multiqc.log",
+        f"{config['outdir']}/multi/multiqc.log",
     wrapper:
         "v1.19.0/bio/multiqc"
