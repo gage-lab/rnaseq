@@ -1,3 +1,13 @@
+def get_trim_input(wildcards):
+    sample_units = samples.loc[wildcards.sample]
+    if not is_paired_end(wildcards.sample):
+        # single end local sample
+        return [sample_units.fq1]
+    else:
+        # paired end local sample
+        return [sample_units.fq1, sample_units.fq2]
+
+
 rule trim_galore_pe:
     input:
         get_trim_input,
