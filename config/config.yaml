@@ -15,7 +15,7 @@ ref:
   release: 107
   region: 
   genes: 
-  source: 
+  source: Ensembl # Valid values are Ensembl or GENCODE
 
 trimming:
   activate: False

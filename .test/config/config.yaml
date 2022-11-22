@@ -8,7 +8,7 @@ ref:
   release: 107
   region: chr21
   genes: 
-  source: 
+  source: Ensembl
 
 trimming:
   activate: True
