@@ -12,8 +12,10 @@ include: "rules/ref.smk"
 include: "rules/trim.smk"
 include: "rules/align.smk"
 include: "rules/count.smk"
+include: "rules/qc.smk"
 
 
 rule all:
     input:
         rules.prep_deseq.output,
+        rules.multiqc.output,

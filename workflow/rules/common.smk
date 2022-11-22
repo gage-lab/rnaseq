@@ -72,22 +72,6 @@ def is_paired_end(sample):
     return all_paired
 
 
-def get_trim_input(wildcards):
-    sample_units = samples.loc[wildcards.sample]
-    sample_name = sample_units["sample_name"]
-    if sample_units["fq1"].endswith("gz"):
-        ending = ".gz"
-    else:
-        ending = ""
-
-    if pd.isna(sample_units["fq2"]):
-        # single end local sample
-        return [sample_units.fq1]
-    else:
-        # paired end local sample
-        return [sample_units.fq1, sample_units.fq2]
-
-
 def get_star_input(wildcards):
     s = samples.loc[(wildcards.sample), ["fq1", "fq2"]].dropna()
     if config["trimming"]["activate"]:

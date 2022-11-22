@@ -14,6 +14,8 @@ ref:
   # Ensembl release (make sure to take one where snpeff data is available, check 'snpEff databases' output)
   release: 107
   region: 
+  genes: 
+  source: Ensembl # Valid values are Ensembl or GENCODE
 
 trimming:
   activate: False
