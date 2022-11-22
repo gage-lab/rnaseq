@@ -1,9 +1,4 @@
 def get_fastqc_input(wildcards):
-    # Adjust wildcards if snakemake mistakes with underscores
-    if "val" in wildcards.sample:
-        wildcards.suffix = wildcards.sample[-4:] + wildcards.suffix
-        wildcards.sample = wildcards.sample[:-4]
-
     # SINGLE END
     if not is_paired_end(wildcards.sample):
         if "trimmed" in wildcards.suffix:
@@ -14,7 +9,7 @@ def get_fastqc_input(wildcards):
             return samples.loc[wildcards.sample]["fq1"]
     # PAIRED ENDS
     else:
-        # paired end local sample
+        # paired end trimmed sample
         if "val" in wildcards.suffix:
             if "1" in wildcards.suffix:
                 return f"{config['outdir']}/trimmed/{wildcards.sample}_val_1.fq.gz"
@@ -33,12 +28,12 @@ rule fastqc:
     input:
         get_fastqc_input,
     output:
-        html=f"{config['outdir']}/fastqc/{{sample}}_{{suffix}}_fastqc.html",
-        zip=f"{config['outdir']}/fastqc/{{sample}}_{{suffix}}_fastqc.zip",
+        html=f"{config['outdir']}/fastqc/{{sample}}__{{suffix}}_fastqc.html",
+        zip=f"{config['outdir']}/fastqc/{{sample}}__{{suffix}}_fastqc.zip",
     params:
         "--quiet",
     log:
-        f"{config['outdir']}/fastqc/{{sample}}_{{suffix}}.log",
+        f"{config['outdir']}/fastqc/{{sample}}__{{suffix}}.log",
     threads: 1
     wrapper:
         "v1.19.0/bio/fastqc"
@@ -80,10 +75,10 @@ rule multiqc:
         get_multiqc_input,
         expand(rules.star.output, sample=samples["sample_name"]),
     output:
-        f"{config['outdir']}/multi/multiqc.html",
+        f"{config['outdir']}/multiqc.html",
     params:
         extra="",  # Optional: extra parameters for multiqc.
     log:
-        f"{config['outdir']}/multi/multiqc.log",
+        f"{config['outdir']}/multiqc.log",
     wrapper:
         "v1.19.0/bio/multiqc"
