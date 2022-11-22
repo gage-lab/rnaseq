@@ -14,10 +14,8 @@ include: "rules/align.smk"
 include: "rules/count.smk"
 include: "rules/qc.smk"
 
-include: "rules/qc.smk"  
 
 rule all:
     input:
         rules.prep_deseq.output,
-        rules.multiqc.output,
         rules.multiqc.output,
