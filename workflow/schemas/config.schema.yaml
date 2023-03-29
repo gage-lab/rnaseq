@@ -1,0 +1,40 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+
+description: snakemake configuration file
+
+type: object
+
+properties:
+  samples:
+    type: string
+
+  outdir:
+    type: string
+
+  ref:
+    type: object
+    properties:
+      genome_fa:
+        type: string
+      txome_fa:
+        type: string
+      txome_gtf:
+        type: string
+    required:
+      - genome.fa
+      - txome.fa
+      - txome.gtf
+      - rmsk.gtf
+
+  trimming:
+    type: object
+    properties:
+      activate:
+        type: boolean
+
+required:
+  - samples
+  - outdir
+  - ref
+  - trimming
+  
