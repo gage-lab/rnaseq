@@ -21,3 +21,5 @@ Analysis pipeline for single-end or paired-end Illumina RNA-seq experiments
 ## TODO
 
 - [ ] add TElocal
+- [ ] get strandedness from salmon output instead of samples.tsv
+- [ ] add usage and contribution docs
