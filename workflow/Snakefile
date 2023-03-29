@@ -41,9 +41,10 @@ def is_paired_end(sample):
 
 ##### source snakemake rule files #####
 include: "rules/ref.smk"
-include: "rules/trim.smk"
-include: "rules/align.smk"
-include: "rules/quant.smk"
+include: "rules/trim_galore.smk"
+include: "rules/star.smk"
+include: "rules/salmon.smk"
+include: "rules/tetranscripts.smk"
 include: "rules/qc.smk"
 include: "rules/de.smk"
 
