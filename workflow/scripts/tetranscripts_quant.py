@@ -11,6 +11,7 @@ def gene_len(gtf):
     gtf["length"] = abs(gtf["end"] - gtf["start"]) + 1
     return gtf.groupby("gene_id").mean("length").reset_index()[["gene_id", "length"]]
 
+
 if __name__ == "__main__":
     sys.stderr = open(snakemake.log[0], "w")
     sys.stderr.write("Reading in files...")
@@ -18,11 +19,19 @@ if __name__ == "__main__":
     # Read in gtf files
     genes = gtfparse.read_gtf(snakemake.input.txome_gtf[0])
     rmsk = gtfparse.read_gtf(snakemake.input.rmsk_gtf[0])
-    rmsk['gene_id'] = rmsk['gene_id'] + ":" + rmsk['family_id'] + ":" + rmsk['class_id'] 
-    joint = pd.concat([gene_len(genes[genes["feature"] == "transcript"]), gene_len(rmsk)])
+    rmsk["gene_id"] = rmsk["gene_id"] + ":" + rmsk["family_id"] + ":" + rmsk["class_id"]
+    joint = pd.concat(
+        [gene_len(genes[genes["feature"] == "transcript"]), gene_len(rmsk)]
+    )
 
     # merge with counts
-    counts = pd.read_csv(snakemake.input.counts[0],sep="\t",header=0,names=["gene_id", "count"],dtype={"gene_id": str, "count": float}).merge(joint, on="gene_id")
+    counts = pd.read_csv(
+        snakemake.input.counts[0],
+        sep="\t",
+        header=0,
+        names=["gene_id", "count"],
+        dtype={"gene_id": str, "count": float},
+    ).merge(joint, on="gene_id")
 
     # compute TPM
     counts["rpk"] = counts["count"] / counts["length"]

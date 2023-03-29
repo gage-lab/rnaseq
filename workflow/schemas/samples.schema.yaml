@@ -5,7 +5,7 @@ description: an entry in the sample sheet
 properties:
   sample_name:
     type: string
-    description: sample identifier 
+    description: sample identifier
   fq1:
     type: string
     description: file path to read 1 fastq file
@@ -20,4 +20,3 @@ required:
   - sample_name
   - fq1
   - strandedness
-  

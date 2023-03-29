@@ -24,7 +24,7 @@ rule tetranscripts_count:
             --mode {params.mode} \
             --stranded {params.strandedness} \
             --sortByPos --verbose 3 \
-            --outdir $(dirname {output}) 2> {log}   
+            --outdir $(dirname {output}) 2> {log}
         """
 
 

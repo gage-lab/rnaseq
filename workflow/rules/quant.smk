@@ -16,7 +16,7 @@ rule salmon_quant:
     conda:
         "../envs/salmon.yaml"
     shell:
-        """ 
+        """
         salmon quant \
             --threads {threads} \
             --geneMap {input.gtf} \
@@ -25,7 +25,7 @@ rule salmon_quant:
             -t {input.txome} \
             -a {input.bam} \
             -o $(dirname {output.quant_tx}) \
-        {params.extra} &> /dev/null 
+        {params.extra} &> /dev/null
         """
 
 
@@ -67,7 +67,7 @@ rule tetranscripts_count:
             --mode {params.mode} \
             --stranded {params.strandedness} \
             --sortByPos --verbose 3 \
-            --outdir $(dirname {output}) 2> {log}   
+            --outdir $(dirname {output}) 2> {log}
         """
 
 

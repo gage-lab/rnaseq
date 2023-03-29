@@ -47,7 +47,7 @@ rule rmsk_genes:
         """
         touch {log} && exec 2>&1 1>>{log}
 
-        gffread -g {input.genome_fa} -w $TMP/rmsk.fa {input.rmsk_gtf} 
+        gffread -g {input.genome_fa} -w $TMP/rmsk.fa {input.rmsk_gtf}
         cat $TMP/rmsk.fa {input.txome_fa} > {output.fa}
         cat {input.rmsk_gtf} {input.txome_gtf} > {output.gtf}
         """
