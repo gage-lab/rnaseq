@@ -21,7 +21,7 @@ options(readr.show_col_types = FALSE)
 coldata <- readr::read_tsv(snakemake@input$samplesheet)
 
 files <- snakemake@input$quant
-names(files) <- basename(dirname(files))
+names(files) <- basename(dirname(dirname(files)))
 
 coldata$files <- files[match(coldata$sample_name, names(files))]
 coldata$names <- coldata$sample_name

@@ -13,7 +13,7 @@ rule deseq_swish:
         dte="{outdir}/de/dte.rds",  # differential transcript expression
         dtu="{outdir}/de/dtu.rds",  # differential transcript usage
     log:
-        "{outdir}/de/deseq_swish.log",
+        "{outdir}/de/logs/deseq_swish.log",
     params:
         model=config["de"]["model"],
     conda:
@@ -35,7 +35,7 @@ rule deseq_tetranscripts:
     output:
         "{outdir}/de/dge_te.rds",
     log:
-        log="{outdir}/de/deseq_tetranscripts.log",
+        log="{outdir}/de/logs/deseq_tetranscripts.log",
     params:
         model=config["de"]["model"],
     conda:
@@ -51,7 +51,7 @@ rule pca_heatmap:
         pca="{outdir}/de/{de}_pca.pdf",
         heatmap="{outdir}/de/{de}_heatmaps.pdf",
     log:
-        "{outdir}/de/{de}_pca_heatmap.log",
+        "{outdir}/de/logs/{de}_pca_heatmap.log",
     params:
         model=config["de"]["model"],
     conda:
@@ -66,7 +66,7 @@ rule results:
     output:
         "{outdir}/de/{contrast}/{de}_results.csv",
     log:
-        "{outdir}/de/{contrast}/{de}_results.log",
+        "{outdir}/de/{contrast}/logs/{de}_results.log",
     params:
         model=config["de"]["model"],
     conda:
@@ -80,9 +80,9 @@ rule volcano_MA:
         rules.results.output,
     output:
         MA_plot="{outdir}/de/{contrast}/{de}_MA.svg",
-        volcano_plot="{outdir}/de/{contrast}/{de}_volcano.svg",
+        volcano_plot="{outdir}/de/{contrast}/logs/{de}_volcano.svg",
     log:
-        "{outdir}/de/{contrast}/{de}_volcano_MA.log",
+        "{outdir}/de/{contrast}/logs/{de}_volcano_MA.log",
     params:
         LFCcutoff=config["de"]["cutoffs"]["log2FoldChange"],
         FDRcutoff=config["de"]["cutoffs"]["FDR"],
@@ -100,7 +100,7 @@ rule make_gs_df:
     output:
         "{outdir}/de/{gs}_genesets.tsv",
     log:
-        "{outdir}/de/{gs}_genesets.log",
+        "{outdir}/de/logs/{gs}_genesets.log",
     conda:
         "../envs/de.yaml"
     wildcard_constraints:
@@ -116,7 +116,7 @@ rule gsea:
     output:
         results="{outdir}/de/{contrast}/{gs}_gsea.tsv",
     log:
-        "{outdir}/de/{contrast}/{gs}_gsea.log",
+        "{outdir}/de/{contrast}/logs/{gs}_gsea.log",
     conda:
         "../envs/de.yaml"
     script:
@@ -130,7 +130,7 @@ rule ora:
         resultsUP="{outdir}/de/{contrast}/up_ora.tsv",
         resultsDOWN="{outdir}/de/{contrast}/down_ora.tsv",
     log:
-        "{outdir}/de/{contrast}/ora.log",
+        "{outdir}/de/{contrast}/logs/ora.log",
     params:
         LFCcutoff=config["de"]["cutoffs"]["log2FoldChange"],
         FDRcutoff=config["de"]["cutoffs"]["FDR"],
