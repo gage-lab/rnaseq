@@ -48,11 +48,8 @@ rule pca_heatmap:
     input:
         rules.deseq_swish.output,
     output:
-        pca_plot="{outdir}/{de}/pca.svg",
-        scree_plot="{outdir}/{de}/scree.svg",
-        pairs_plot="{outdir}/{de}/pairs.svg",
-        dist_heatmap="{outdir}/{de}/dist_heatmap.svg",
-        corr_heatmap="{outdir}/{de}/corr_heatmap.svg",
+        pca="{outdir}/{de}/pca.pdf",
+        heatmap="{outdir}/{de}/heatmaps.pdf",
     log:
         "{outdir}/{de}/pca_heatmap.log",
     params:
