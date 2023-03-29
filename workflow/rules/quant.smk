@@ -1,13 +1,13 @@
 rule salmon_quant:
     input:
         bam=rules.star_align.output.txome_bam,
-        txome=expand(rules.get_ref.output, file="txome.fa"),
-        gtf=expand(rules.get_ref.output, file="txome.gtf"),
+        txome=expand(rules.get_ref.output, file="txome.fa", allow_missing=True),
+        gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
     output:
-        quant_tx=f"{outdir}/salmon_quant/{{sample}}/quant.sf",
-        quant_ge=f"{outdir}/salmon_quant/{{sample}}/quant.genes.sf",
+        quant_tx="{outdir}/salmon_quant/{sample}/quant.sf",
+        quant_ge="{outdir}/salmon_quant/{sample}/quant.genes.sf",
     log:
-        f"{outdir}/salmon_quant/{{sample}}/logs/salmon_quant.log",
+        "{outdir}/salmon_quant/{sample}/logs/salmon_quant.log",
     params:
         libtype="A",
         numBootstraps=config["salmon"]["numBootstraps"],
@@ -45,16 +45,16 @@ rule tetranscripts_count:
     input:
         bam=rules.samtools_sort.output,
         bai=rules.samtools_index.output,
-        txome_gtf=expand(rules.get_ref.output, file="txome.gtf"),
-        rmsk_gtf=expand(rules.get_ref.output, file="rmsk.gtf"),
+        txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
+        rmsk_gtf=expand(rules.get_ref.output, file="rmsk.gtf", allow_missing=True),
     output:
-        f"{outdir}/TEcount/{{sample}}/TEtranscripts_out.cntTable",
+        "{outdir}/TEcount/{sample}/TEtranscripts_out.cntTable",
     conda:
         "../envs/tetranscripts.yaml"
     shadow:
         "shallow"
     log:
-        f"{outdir}/TEcount/{{sample}}/count.err",
+        "{outdir}/TEcount/{sample}/count.err",
     params:
         strandedness=get_strandedness,
         mode="multi",
@@ -74,12 +74,12 @@ rule tetranscripts_count:
 rule tetranscripts_quant:
     input:
         counts=rules.tetranscripts_count.output,
-        txome_gtf=expand(rules.get_ref.output, file="txome.gtf"),
-        rmsk_gtf=expand(rules.get_ref.output, file="rmsk.gtf"),
+        txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
+        rmsk_gtf=expand(rules.get_ref.output, file="rmsk.gtf", allow_missing=True),
     output:
-        f"{outdir}/TEcount/{{sample}}/TEtranscripts_out.quant",
+        "{outdir}/TEcount/{sample}/TEtranscripts_out.quant",
     log:
-        f"{outdir}/TEcount/{{sample}}/quant.err",
+        "{outdir}/TEcount/{sample}/quant.err",
     conda:
         "../envs/tetranscripts.yaml"
     script:

@@ -13,9 +13,9 @@ rule get_ref:
     input:
         get_ref_input,
     output:
-        f"{outdir}/resources/{{file}}",
+        "{outdir}/resources/{file}",
     log:
-        f"{outdir}/resources/get_{{file}}.log",
+        "{outdir}/resources/get_{file}.log",
     conda:
         "../envs/get_ref.yaml"
     shell:
@@ -32,15 +32,15 @@ rule get_ref:
 
 rule rmsk_genes:
     input:
-        genome_fa=expand(rules.get_ref.output, file="genome.fa"),
-        txome_fa=expand(rules.get_ref.output, file="txome.fa"),
-        rmsk_gtf=expand(rules.get_ref.output, file="rmsk.gtf"),
-        txome_gtf=expand(rules.get_ref.output, file="txome.gtf"),
+        genome_fa=expand(rules.get_ref.output, file="genome.fa", allow_missing=True),
+        txome_fa=expand(rules.get_ref.output, file="txome.fa", allow_missing=True),
+        rmsk_gtf=expand(rules.get_ref.output, file="rmsk.gtf", allow_missing=True),
+        txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
     output:
-        fa=f"{outdir}/resources/rmsk_genes.fa",
-        gtf=f"{outdir}/resources/rmsk_genes.gtf",
+        fa="{outdir}/resources/rmsk_genes.fa",
+        gtf="{outdir}/resources/rmsk_genes.gtf",
     log:
-        f"{outdir}/resources/rmsk_genes.log",
+        "{outdir}/resources/rmsk_genes.log",
     conda:
         "../envs/get_ref.yaml"
     shell:

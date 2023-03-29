@@ -12,10 +12,10 @@ rule trim_galore_pe:
     input:
         get_trim_input,
     output:
-        f"{outdir}/trimmed/{{sample}}_val_1.fq.gz",
-        f"{outdir}/trimmed/{{sample}}_val_2.fq.gz",
+        "{outdir}/trimmed/{sample}_val_1.fq.gz",
+        "{outdir}/trimmed/{sample}_val_2.fq.gz",
     log:
-        f"{outdir}/trimmed/{{sample}}.log",
+        "{outdir}/trimmed/{sample}.log",
     params:
         extra="-q 20",  # -q 20 is quality cutoff
     threads: 4
@@ -37,9 +37,9 @@ rule trim_galore_se:
     input:
         get_trim_input,
     output:
-        f"{outdir}/trimmed/{{sample}}_trimmed.fq.gz",
+        "{outdir}/trimmed/{sample}_trimmed.fq.gz",
     log:
-        f"{outdir}/trimmed/{{sample}}.log",
+        "{outdir}/trimmed/{sample}.log",
     params:
         extra="-q 20",  # -q 20 is quality cutoff
     threads: 4
