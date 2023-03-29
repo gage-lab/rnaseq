@@ -1,5 +1,4 @@
 def get_star_input(wildcards):
-    s = samples.loc[(wildcards.sample), ["fq1", "fq2"]].dropna()
     if config["trimming"]["activate"]:
         if not is_paired_end(wildcards.sample):
             return {
@@ -12,8 +11,10 @@ def get_star_input(wildcards):
             }
     else:
         if not is_paired_end(wildcards.sample):
+            s = samples.loc[(wildcards.sample), ["fq1"]].dropna()
             return {"fq1": f"{s.fq1}"}
         else:
+            s = samples.loc[(wildcards.sample), ["fq1", "fq2"]].dropna()
             return {"fq1": f"{s.fq1}", "fq2": f"{s.fq2}"}
 
 

@@ -28,6 +28,8 @@ validate(samples, "schemas/samples.schema.yaml")
 
 
 def is_paired_end(sample):
+    if "fq2" not in samples.columns:
+        return False
     sample_units = samples.loc[sample]
     null_units = sample_units.isnull()
     paired = ~null_units["fq2"]
