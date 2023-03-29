@@ -1,3 +1,5 @@
-sample_name	fq1	fq2	strandedness	treatment
+sample_name	fq1	fq2	strandedness	condition
 testA	ngs-test-data/rnaseq/a.chr21.1.fq.gz	ngs-test-data/rnaseq/a.chr21.2.fq.gz	unstranded	Control
-testB	ngs-test-data/rnaseq/b.chr21.1.fq.gz	ngs-test-data/rnaseq/b.chr21.2.fq.gz	unstranded	Treated
+testB	ngs-test-data/rnaseq/b.chr21.1.fq.gz	ngs-test-data/rnaseq/b.chr21.2.fq.gz	unstranded	Control
+testC	ngs-test-data/rnaseq/c.chr21.1.fq.gz	ngs-test-data/rnaseq/c.chr21.2.fq.gz	unstranded	Treatment
+testD	ngs-test-data/rnaseq/d.chr21.1.fq.gz	ngs-test-data/rnaseq/d.chr21.2.fq.gz	unstranded	Treatment

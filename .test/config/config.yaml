@@ -14,12 +14,13 @@ salmon:
   numBootstraps: 20
   extra: --gencode
 
-condition: treatment
-cutoffs:
-  log2FoldChange: 0.1
-  FDR: 0.4
-
-contrasts:
-  Test:
-    condition1: YY1
-    condition2: Control
+de:
+  # contrasts for the deseq2 results method
+  contrasts:
+    condition_Treatment_vs_Control:
+      - Treatment
+      - Control
+  model: ~condition
+  cutoffs:
+    log2FoldChange: 0.1
+    FDR: 1
