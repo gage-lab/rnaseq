@@ -3,7 +3,7 @@ def get_fastqc_input(wildcards):
     if not is_paired_end(wildcards.sample):
         if "trimmed" in wildcards.suffix:
             # single end trimmed sample
-            return f"{config['outdir']}/trimmed/{wildcards.sample}_trimmed.fq.gz"
+            return f"{outdir}/trimmed/{wildcards.sample}_trimmed.fq.gz"
         else:
             # single end local sample
             return samples.loc[wildcards.sample]["fq1"]
@@ -12,10 +12,10 @@ def get_fastqc_input(wildcards):
         # paired end trimmed sample
         if "val" in wildcards.suffix:
             if "1" in wildcards.suffix:
-                return f"{config['outdir']}/trimmed/{wildcards.sample}_val_1.fq.gz"
+                return f"{outdir}/trimmed/{wildcards.sample}_val_1.fq.gz"
 
             elif "2" in wildcards.suffix:
-                return f"{config['outdir']}/trimmed/{wildcards.sample}_val_2.fq.gz"
+                return f"{outdir}/trimmed/{wildcards.sample}_val_2.fq.gz"
         # paired end local sample
         else:
             if wildcards.suffix == "1":
@@ -73,12 +73,14 @@ def get_multiqc_input(wildcards):
 rule multiqc:
     input:
         get_multiqc_input,
-        expand(rules.star.output, sample=samples["sample_name"]),
+        expand(rules.star_align.output, sample=samples["sample_name"]),
+        expand(rules.salmon_quant.output, sample=samples["sample_name"]),
+        expand(rules.tetranscripts_count.output, sample=samples["sample_name"]),
     output:
-        f"{config['outdir']}/multiqc.html",
+        f"{outdir}/multiqc.html",
     params:
         extra="",  # Optional: extra parameters for multiqc.
     log:
-        f"{config['outdir']}/multiqc.log",
+        f"{outdir}/multiqc.log",
     wrapper:
         "v1.19.0/bio/multiqc"

@@ -12,15 +12,15 @@ rule trim_galore_pe:
     input:
         get_trim_input,
     output:
-        f"{config['outdir']}/trimmed/{{sample}}_val_1.fq.gz",
-        f"{config['outdir']}/trimmed/{{sample}}_val_2.fq.gz",
+        f"{outdir}/trimmed/{{sample}}_val_1.fq.gz",
+        f"{outdir}/trimmed/{{sample}}_val_2.fq.gz",
     log:
-        f"{config['outdir']}/trimmed/{{sample}}.log",
+        f"{outdir}/trimmed/{{sample}}.log",
     params:
         extra="-q 20",  # -q 20 is quality cutoff
-    conda:
-        "../envs/trim_galore.yml"
     threads: 4
+    conda:
+        "../envs/trim_galore.yaml"
     shell:
         """
         trim_galore --paired \
@@ -37,14 +37,14 @@ rule trim_galore_se:
     input:
         get_trim_input,
     output:
-        f"{config['outdir']}/trimmed/{{sample}}_trimmed.fq.gz",
+        f"{outdir}/trimmed/{{sample}}_trimmed.fq.gz",
     log:
-        f"{config['outdir']}/trimmed/{{sample}}.log",
+        f"{outdir}/trimmed/{{sample}}.log",
     params:
         extra="-q 20",  # -q 20 is quality cutoff
-    conda:
-        "../envs/trim_galore.yml"
     threads: 4
+    conda:
+        "../envs/trim_galore.yaml"
     shell:
         """
         trim_galore \

@@ -1,66 +1,53 @@
-rule get_genome:
-    output:
-        genome["fa"],
-    log:
-        "resources/get-genome.log",
-    params:
-        species=config["ref"]["species"],
-        datatype="dna",
-        build=config["ref"]["build"],
-        release=config["ref"]["release"],
-    cache: True
-    wrapper:
-        "v1.17.1/bio/reference/ensembl-sequence"
+def get_ref_input(wildcards):
+    if config["ref"][wildcards.file].startswith("ftp"):
+        return FTP.remote(config["ref"][wildcards.file], static=True)
+    elif config["ref"][wildcards.file].startswith("http"):
+        return HTTP.remote(config["ref"][wildcards.file], static=True)
+    elif os.path.exists(config["ref"][wildcards.file]):
+        return config["ref"][wildcards.file]
+    else:
+        return AUTO.remote(config["ref"][wildcards.file])
 
 
-rule get_genes:
-    output:
-        genes,
-    params:
-        species=config["ref"]["species"],
-        fmt="gtf",
-        build=config["ref"]["build"],
-        release=config["ref"]["release"],
-        flavor="",
-    cache: True
-    log:
-        "resources/get_genes.log",
-    wrapper:
-        "v1.17.1/bio/reference/ensembl-annotation"
-
-
-rule star_index:
+rule get_ref:
     input:
-        fasta=rules.get_genome.output,
+        get_ref_input,
     output:
-        genome["index"],
-    threads: 8
-    params:
-        extra="",  # optional parameters
+        f"{outdir}/resources/{{file}}",
     log:
-        "resources/star_index.log",
-    wrapper:
-        "v1.16.0/bio/star/index"
-
-
-rule get_rmsk:
-    output:
-        "resources/rmsk.gtf",
-    params:
-        species=config["ref"]["species"],
-        source=config["ref"]["source"],
-        build=config["ref"]["build"],
+        f"{outdir}/resources/get_{{file}}.log",
     conda:
-        "../envs/download.yml"
-    log:
-        "resources/get_rmsk.log",
+        "../envs/get_ref.yaml"
     shell:
         """
-        # TODO: update this to get most recent repeatmasker runs
-        if [ {params.build} == "GRCh38" ] || [ {params.build} == "GRCm38" ]; then
-            URL="https://labshare.cshl.edu/shares/mhammelllab/www-data/TEtranscripts/TE_GTF/{params.build}_{params.source}_rmsk_TE.gtf.gz"
-        else 
-            echo "Species and build combination not implemented"; exit 1
+        touch {log} && exec 2>&1 1>>{log}
+
+        if [[ {input} == *"gz" ]]; then
+            gzip -dc {input} > {output}
+        else
+            rsync {input} {output}
         fi
-        wget -O- $URL | gzip -dc > {output} 2> {log}
+        """
+
+
+rule rmsk_genes:
+    input:
+        genome_fa=expand(rules.get_ref.output, file="genome.fa"),
+        txome_fa=expand(rules.get_ref.output, file="txome.fa"),
+        rmsk_gtf=expand(rules.get_ref.output, file="rmsk.gtf"),
+        txome_gtf=expand(rules.get_ref.output, file="txome.gtf"),
+    output:
+        fa=f"{outdir}/resources/rmsk_genes.fa",
+        gtf=f"{outdir}/resources/rmsk_genes.gtf",
+    log:
+        f"{outdir}/resources/rmsk_genes.log",
+    conda:
+        "../envs/get_ref.yaml"
+    shell:
+        """
+        touch {log} && exec 2>&1 1>>{log}
+
+        gffread -g {input.genome_fa} -w $TMP/rmsk.fa {input.rmsk_gtf} 
+        cat $TMP/rmsk.fa {input.txome_fa} > {output.fa}
+        cat {input.rmsk_gtf} {input.txome_gtf} > {output.gtf}
         """

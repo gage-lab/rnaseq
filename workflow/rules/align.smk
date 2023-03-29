@@ -1,27 +1,72 @@
-rule star:
+def get_star_input(wildcards):
+    s = samples.loc[(wildcards.sample), ["fq1", "fq2"]].dropna()
+    if config["trimming"]["activate"]:
+        if not is_paired_end(wildcards.sample):
+            return {"fq1": f"{outdir}/trimmed/{wildcards.sample}_trimmed.fq.gz"}
+        else:
+            return {
+                "fq1": f"{outdir}/trimmed/{wildcards.sample}_val_1.fq.gz",
+                "fq2": f"{outdir}/trimmed/{wildcards.sample}_val_2.fq.gz",
+            }
+    else:
+        if not is_paired_end(wildcards.sample):
+            return {"fq1": f"{s.fq1}"}
+        else:
+            return {"fq1": f"{s.fq1}", "fq2": f"{s.fq2}"}
+
+
+rule star_index:
+    input:
+        fasta=expand(rules.get_ref.output, file="genome.fa"),
+    output:
+        star_index=directory(f"{outdir}/resources/star_index"),
+    threads: 8
+    log:
+        f"{outdir}/resources/star_index.log",
+    wrapper:
+        "v1.20.0/bio/star/index"
+
+
+rule star_align:
     input:
         unpack(get_star_input),
         idx=rules.star_index.output,
+        gtf=expand(rules.get_ref.output, file="txome.gtf"),
     output:
-        aln=f"{config['outdir']}/star/{{sample}}/Aligned.sortedByCoord.out.bam",
-        log=f"{config['outdir']}/star/{{sample}}/Log.out",
-        log_final=f"{config['outdir']}/star/{{sample}}/Log.final.out",
-    params:
-        extra=config["star"]["extra"],
+        genome_bam=f"{outdir}/star_align/{{sample}}/Aligned.out.bam",
+        txome_bam=f"{outdir}/star_align/{{sample}}/Aligned.toTranscriptome.out.bam",
+        log=f"{outdir}/star_align/{{sample}}/Log.out",
+        log_final=f"{outdir}/star_align/{{sample}}/Log.final.out",
     threads: 8
+    log:
+        f"{outdir}/star_align/{{sample}}/Log.err",
+    params:
+        # these parameters are optimized to retain multimapping reads
+        extra=f"""--outSAMmultNmax -1 --outFilterMultimapNmax 100 --winAnchorMultimapNmax 200 --outMultimapperOrder Random --runRNGseed 777 --outSAMtype BAM Unsorted --sjdbScore 1""",
+    conda:
+        "../envs/star.yaml"
+    script:
+        # use custom script to return both genome_bam and txome_bam
+        "../scripts/star.py"
+
+
+rule samtools_sort:
+    input:
+        rules.star_align.output.genome_bam,
+    output:
+        f"{outdir}/star_align/{{sample}}/Aligned.out.sorted.bam",
+    log:
+        f"{outdir}/star_align/{{sample}}/samtools_sort.log",
     wrapper:
-        "v1.16.0/bio/star/align"
+        "v1.20.0/bio/samtools/sort"
 
 
 rule samtools_index:
     input:
-        get_bam,
+        rules.samtools_sort.output,
     output:
-        f"{config['outdir']}/samtools_index/{{sample}}.bam.bai",
+        f"{outdir}/star_align/{{sample}}/Aligned.out.sorted.bam.bai",
     log:
-        f"{config['outdir']}/samtools_index/{{sample}}/samtools_index.log",
-    params:
-        extra="",  # optional params string
-    threads: 4  # This value - 1 will be sent to -@
+        f"{outdir}/star_align/{{sample}}/samtools_index.log",
     wrapper:
-        "v1.16.0/bio/samtools/index"
+        "v1.20.0/bio/samtools/index"
