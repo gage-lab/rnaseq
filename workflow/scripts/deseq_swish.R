@@ -6,14 +6,14 @@ con <- file(snakemake@log[[1]], "w")
 sink(file = con, type = "message")
 
 suppressPackageStartupMessages({
-    library(tidyverse)
-    library(tximeta)
-    library(AnnotationDbi)
-    library(org.Hs.eg.db)
-    library(DESeq2)
-    library(fishpond)
-    library(rtracklayer)
-    library(glue)
+  library(tidyverse)
+  library(tximeta)
+  library(AnnotationDbi)
+  library(org.Hs.eg.db)
+  library(DESeq2)
+  library(fishpond)
+  library(rtracklayer)
+  library(glue)
 })
 snakemake@source("utilities.R")
 options(readr.show_col_types = FALSE)
@@ -34,15 +34,15 @@ coldata <- dplyr::filter(coldata, !names %in% snakemake@params[["samples_exclude
 
 # get transcript and gene info from GTF
 tx_gtf <- rtracklayer::readGFF(snakemake@input[["txome_gtf"]]) %>%
-    dplyr::filter(!is.na(transcript_id)) %>%
-    dplyr::select(gene_id, gene_type, gene_name, transcript_id, transcript_type, transcript_name, transcript_support_level) %>%
-    dplyr::distinct()
+  dplyr::filter(!is.na(transcript_id)) %>%
+  dplyr::select(gene_id, gene_type, gene_name, transcript_id, transcript_type, transcript_name, transcript_support_level) %>%
+  dplyr::distinct()
 gene_gtf <- dplyr::select(tx_gtf, gene_id, gene_type, gene_name) %>%
-    dplyr::distinct() %>%
-    tibble::column_to_rownames("gene_id")
+  dplyr::distinct() %>%
+  tibble::column_to_rownames("gene_id")
 tx2gene <- dplyr::select(tx_gtf, gene_id, transcript_id) %>%
-    dplyr::rename(GENEID = gene_id, TXNAME = transcript_id) %>%
-    dplyr::relocate(TXNAME, GENEID)
+  dplyr::rename(GENEID = gene_id, TXNAME = transcript_id) %>%
+  dplyr::relocate(TXNAME, GENEID)
 rownames(tx_gtf) <- tx_gtf$transcript_id
 
 # DESeq

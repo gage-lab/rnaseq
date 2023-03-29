@@ -6,12 +6,12 @@ con <- file(snakemake@log[[1]], "w")
 sink(file = con, type = "message")
 
 suppressPackageStartupMessages({
-    library(tidyverse)
-    library(EnhancedVolcano)
-    library(fgsea)
-    library(zip)
-    library(msigdbr)
-    library(glue)
+  library(tidyverse)
+  library(EnhancedVolcano)
+  library(fgsea)
+  library(zip)
+  library(msigdbr)
+  library(glue)
 })
 ggplot2::theme_set(ggplot2::theme_bw())
 options(readr.show_col_types = FALSE)
@@ -33,16 +33,16 @@ ranked <- sort(ranked, decreasing = TRUE)
 # get gene sets
 gs_df <- readr::read_tsv(snakemake@input[["gs_df"]])
 gs_list <- purrr::map(unique(gs_df$gs_name), function(gs) {
-    dplyr::filter(gs_df, gs_name == gs) %>%
-        dplyr::pull(human_ensembl_gene)
+  dplyr::filter(gs_df, gs_name == gs) %>%
+    dplyr::pull(human_ensembl_gene)
 })
 names(gs_list) <- unique(gs_df$gs_name)
 
 # run GSEA
 print("Running fgsea...")
 res <- fgsea::fgsea(
-    pathways = gs_list,
-    stats = ranked
+  pathways = gs_list,
+  stats = ranked
 )
 
 # save tabular results

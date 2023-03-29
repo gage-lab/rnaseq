@@ -6,12 +6,12 @@ con <- file(snakemake@log[[1]], "w")
 sink(file = con, type = "message")
 
 suppressPackageStartupMessages({
-    library(tidyverse)
-    library(tximeta)
-    library(AnnotationDbi)
-    library(org.Hs.eg.db)
-    library(DESeq2)
-    library(glue)
+  library(tidyverse)
+  library(tximeta)
+  library(AnnotationDbi)
+  library(org.Hs.eg.db)
+  library(DESeq2)
+  library(glue)
 })
 snakemake@source("utilities.R")
 options(readr.show_col_types = FALSE)
@@ -33,27 +33,27 @@ coldata <- dplyr::filter(coldata, !names %in% snakemake@params[["samples_exclude
 
 # get info from GTF
 gene_gtf <- rtracklayer::readGFF(snakemake@input[["txome_gtf"]]) %>%
-    dplyr::select(gene_id, gene_type, gene_name) %>%
-    dplyr::distinct() %>%
-    tibble::column_to_rownames("gene_id")
+  dplyr::select(gene_id, gene_type, gene_name) %>%
+  dplyr::distinct() %>%
+  tibble::column_to_rownames("gene_id")
 rmsk_gtf <- rtracklayer::readGFF(snakemake@input[["rmsk_gtf"]]) %>%
-    dplyr::select(gene_id, family_id, class_id) %>%
-    dplyr::mutate(subfamily_id = gene_id, gene_id = paste(gene_id, family_id, class_id, sep = ":")) %>%
-    dplyr::distinct() %>%
-    tibble::column_to_rownames("gene_id")
+  dplyr::select(gene_id, family_id, class_id) %>%
+  dplyr::mutate(subfamily_id = gene_id, gene_id = paste(gene_id, family_id, class_id, sep = ":")) %>%
+  dplyr::distinct() %>%
+  tibble::column_to_rownames("gene_id")
 
 # DESeq
 print("Reading TEtranscripts quantifications for DESeq")
 se <- tximeta::tximeta(
-    coldata,
-    type = "none",
-    txOut = TRUE,
-    txIdCol = "gene_id",
-    countsCol = "count",
-    lengthCol = "length",
-    abundanceCol = "TPM",
-    importer = readr::read_tsv,
-    skipMeta = TRUE
+  coldata,
+  type = "none",
+  txOut = TRUE,
+  txIdCol = "gene_id",
+  countsCol = "count",
+  lengthCol = "length",
+  abundanceCol = "TPM",
+  importer = readr::read_tsv,
+  skipMeta = TRUE
 )
 
 # add alternative names/ids
