@@ -38,7 +38,6 @@ for (t in terms) {
   bi <- PCAtools::biplot(p, legendPosition = "right", colby = t, lab = NULL) +
     coord_fixed()
   print(bi)
-  dev.off()
   pairs <- PCAtools::pairsplot(p, components = comps[!is.na(comps)], gridlines.major = FALSE, gridlines.minor = FALSE) + coord_fixed()
   print(pairs)
 }
