@@ -1,0 +1,33 @@
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - r-base>=4.2
+  - radian
+  - r-irkernel
+  - r-languageserver
+  - r-essentials
+  - r-usethis
+  - r-vroom
+  - r-glue
+  - r-patchwork
+  - r-janitor
+  - r-rfast
+  - r-svglite
+  - bioconductor-tximeta>=1.16.0
+  - bioconductor-org.hs.eg.db>=3.16.0
+  - bioconductor-org.mm.eg.db
+  - bioconductor-apeglm
+  - bioconductor-deseq2>=1.38.0
+  - bioconductor-fishpond
+  - bioconductor-complexheatmap
+  - bioconductor-enhancedvolcano
+  - bioconductor-pcatools
+  - bioconductor-clusterprofiler
+  - bioconductor-enrichplot
+  - bioconductor-fgsea>=1.24.0
+  - r-msigdbr
+  - r-ggstatsplot
+  - r-tidyheatmap
+  - r-seurat>=4

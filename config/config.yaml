@@ -3,7 +3,7 @@ samples: config/samples.tsv
 outdir: results
 
 ref:
-  # Ensembl species name: 
+  # Ensembl species name:
   # OPTIONS: homo_sapiens, mus_musculus
   species: homo_sapiens
   # Genome build
@@ -13,8 +13,8 @@ ref:
   build: GRCh38
   # Ensembl release (make sure to take one where snpeff data is available, check 'snpEff databases' output)
   release: 107
-  region: 
-  genes: 
+  region:
+  genes:
   source: Ensembl # Valid values are Ensembl or GENCODE
 
 trimming:

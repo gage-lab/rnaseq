@@ -1,21 +1,105 @@
+# Main entrypoint of the workflow.
+
 from snakemake.utils import min_version
+from snakemake.utils import validate
+from snakemake.remote import FTP, HTTP, AUTO
+import pandas as pd
+import os, shutil
+
+FTP = FTP.RemoteProvider()
+HTTP = HTTP.RemoteProvider()
 
 ##### set minimum snakemake version #####
-min_version("7.16.0")
+min_version("7.22.0")
 
 
+##### read in config and samplesheet #####
 configfile: "config/config.yaml"
 
 
-include: "rules/common.smk"
+validate(config, "schemas/config.schema.yaml")
+
+samples = (
+    pd.read_csv(config["samples"], dtype={"sample_name": str}, sep="\t")
+    .set_index("sample_name", drop=False)
+    .sort_index()
+)
+validate(samples, "schemas/samples.schema.yaml")
+
+# copy config, samplesheet to output directory
+shutil.copy("config/config.yaml", config["outdir"])
+shutil.copy(config["samples"], config["outdir"])
+
+# write date, repo, and commit hash to file in output directory
+remote = os.popen("git remote get-url origin").read()
+commit = os.popen("git rev-parse HEAD").read()
+date = os.popen("date").read()
+
+# TODO: don't write if in dryrun mode
+# create outdir if it doesn't exist
+os.system("mkdir -p {}".format(config["outdir"]))
+f = open(os.path.join(config["outdir"], "pipeline_info.txt"), "w")
+f.write(f"Started pipeline on {date}\nUsed {remote} On commit {commit}\n")
+
+
+def is_paired_end(sample):
+    if "fq2" not in samples.columns:
+        return False
+    sample_units = samples.loc[sample]
+    null_units = sample_units.isnull()
+    paired = ~null_units["fq2"]
+    all_paired = paired.all()
+    all_single = (~paired).all()
+    assert (
+        all_single or all_paired
+    ), f"invalid units for sample {sample}, must be all paired end or all single end"
+    return all_paired
+
+
+##### source snakemake rule files #####
 include: "rules/ref.smk"
-include: "rules/trim.smk"
-include: "rules/align.smk"
-include: "rules/count.smk"
+include: "rules/trim_galore.smk"
+include: "rules/star.smk"
+include: "rules/salmon.smk"
+include: "rules/tetranscripts.smk"
 include: "rules/qc.smk"
+include: "rules/de.smk"
 
 
 rule all:
     input:
-        rules.prep_deseq.output,
-        rules.multiqc.output,
+        expand(
+            rules.pca_heatmap.output,
+            de=["dge", "dge_te"],
+            outdir=config["outdir"],
+        ),
+        expand(
+            rules.volcano_MA.output,
+            de=["dge", "dte", "dtu", "dge_te"],
+            contrast=config["de"]["contrasts"].keys(),
+            outdir=config["outdir"],
+        ),
+        expand(
+            rules.gsea.output,
+            gs=[
+                "hallmark",
+                "tft",
+                "go",
+            ],
+            contrast=config["de"]["contrasts"].keys(),
+            outdir=config["outdir"],
+        ),
+        expand(
+            rules.ora.output,
+            contrast=config["de"]["contrasts"].keys(),
+            outdir=config["outdir"],
+        ),
+        expand(
+            rules.multiqc.output,
+            outdir=config["outdir"],
+        ),
+
+
+date = os.popen("date").read()
+f.write(f"Finished pipeline on {date}")
+f.close()

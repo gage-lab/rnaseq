@@ -1,0 +1,22 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+
+description: an entry in the sample sheet
+
+properties:
+  sample_name:
+    type: string
+    description: sample identifier
+  fq1:
+    type: string
+    description: file path to read 1 fastq file
+  fq2:
+    type: string
+    description: file path to read 2 fastq file
+  strandeness:
+    type: string
+    description: SRA/ENA accession number for automatic download of fastq files
+
+required:
+  - sample_name
+  - fq1
+  - strandedness

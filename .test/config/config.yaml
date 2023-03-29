@@ -1,17 +1,26 @@
-# path or URL to sample sheet (TSV format, columns: sample, condition, ...)
-samples: .test/config/samples.tsv
+samples: config/samples.tsv
 outdir: results
 
 ref:
-  species: homo_sapiens
-  build: GRCh38
-  release: 107
-  region: chr21
-  genes: 
-  source: Ensembl
+  genome.fa: ngs-test-data/rnaseq/ref/genome.chr21.fa
+  txome.fa: ngs-test-data/rnaseq/ref/txome.chr21.fa
+  txome.gtf: ngs-test-data/rnaseq/ref/txome.chr21.gtf
+  rmsk.gtf: ngs-test-data/rnaseq/ref/rmsk.chr21.gtf
 
 trimming:
   activate: True
 
-tecount:
-  mode: "uniq"
+salmon:
+  numBootstraps: 20
+  extra: --gencode
+
+de:
+  # contrasts for the deseq2 results method
+  contrasts:
+    condition_Treatment_vs_Control:
+      - Treatment
+      - Control
+  model: ~condition
+  cutoffs:
+    log2FoldChange: 0.1
+    FDR: 1
