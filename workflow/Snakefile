@@ -1,7 +1,17 @@
+# Main entrypoint of the workflow.
+# Please follow the best practices:
+# https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html,
+# in particular regarding the standardized folder structure mentioned there.
+
 from snakemake.utils import min_version
+from snakemake.remote import FTP, HTTP, AUTO
+import os
+
+FTP = FTP.RemoteProvider()
+HTTP = HTTP.RemoteProvider()
 
 ##### set minimum snakemake version #####
-min_version("7.16.0")
+min_version("7.22.0")
 
 
 configfile: "config/config.yaml"
@@ -11,11 +21,36 @@ include: "rules/common.smk"
 include: "rules/ref.smk"
 include: "rules/trim.smk"
 include: "rules/align.smk"
-include: "rules/count.smk"
+include: "rules/quant.smk"
 include: "rules/qc.smk"
+include: "rules/de.smk"
+
+print("Contrasts are {}".format(*config['de']['contrasts'].keys()))
 
 
 rule all:
     input:
-        rules.prep_deseq.output,
+        expand(
+            rules.pca_heatmap.output,
+            de=["dge", "dge_te"],
+        ),
+        expand(
+            rules.volcano_MA.output,
+            de=["dge", "dte", "dtu", "dge_te"],
+            contrast=config["de"]["contrasts"].keys(),
+        ),
+        expand(
+            rules.gsea.output,
+            gs=[
+                "hallmark",
+                "tft",
+                "go",
+            ],
+            contrast=config["de"]["contrasts"].keys()
+        ),
+        expand(
+            rules.ora.output,
+            contrast=config["de"]["contrasts"].keys()
+        ),
         rules.multiqc.output,
+
