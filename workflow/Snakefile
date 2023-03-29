@@ -4,7 +4,7 @@ from snakemake.utils import min_version
 from snakemake.utils import validate
 from snakemake.remote import FTP, HTTP, AUTO
 import pandas as pd
-import os
+import os, shutil
 
 FTP = FTP.RemoteProvider()
 HTTP = HTTP.RemoteProvider()
@@ -25,6 +25,19 @@ samples = (
     .sort_index()
 )
 validate(samples, "schemas/samples.schema.yaml")
+
+# copy config, samplesheet to output directory
+shutil.copy("config/config.yaml", config["outdir"])
+shutil.copy(config["samples"], config["outdir"])
+
+# write date, repo, and commit hash to file in output directory
+remote = os.popen("git remote get-url origin").read()
+commit = os.popen("git rev-parse HEAD").read()
+date = os.popen("date").read()
+
+# TODO: don't write if in dryrun mode
+f = open(os.path.join(config["outdir"], "pipeline_info.txt"), "w")
+f.write(f"Started pipeline on {date}\nUsed {remote} On commit {commit}\n")
 
 
 def is_paired_end(sample):
@@ -83,3 +96,8 @@ rule all:
             rules.multiqc.output,
             outdir=config["outdir"],
         ),
+
+
+date = os.popen("date").read()
+f.write(f"Finished pipeline on {date}")
+f.close()
