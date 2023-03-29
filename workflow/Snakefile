@@ -1,10 +1,9 @@
 # Main entrypoint of the workflow.
-# Please follow the best practices:
-# https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html,
-# in particular regarding the standardized folder structure mentioned there.
 
 from snakemake.utils import min_version
+from snakemake.utils import validate
 from snakemake.remote import FTP, HTTP, AUTO
+import pandas as pd
 import os
 
 FTP = FTP.RemoteProvider()
@@ -14,10 +13,33 @@ HTTP = HTTP.RemoteProvider()
 min_version("7.22.0")
 
 
+##### read in config and samplesheet #####
 configfile: "config/config.yaml"
 
 
-include: "rules/common.smk"
+validate(config, "schemas/config.schema.yaml")
+
+samples = (
+    pd.read_csv(config["samples"], dtype={"sample_name": str}, sep="\t")
+    .set_index("sample_name", drop=False)
+    .sort_index()
+)
+validate(samples, "schemas/samples.schema.yaml")
+
+
+def is_paired_end(sample):
+    sample_units = samples.loc[sample]
+    null_units = sample_units.isnull()
+    paired = ~null_units["fq2"]
+    all_paired = paired.all()
+    all_single = (~paired).all()
+    assert (
+        all_single or all_paired
+    ), f"invalid units for sample {sample}, must be all paired end or all single end"
+    return all_paired
+
+
+##### source snakemake rule files #####
 include: "rules/ref.smk"
 include: "rules/trim.smk"
 include: "rules/align.smk"
@@ -26,19 +48,18 @@ include: "rules/qc.smk"
 include: "rules/de.smk"
 
 
-print("Contrasts are {}".format(*config["de"]["contrasts"].keys()))
-
-
 rule all:
     input:
         expand(
             rules.pca_heatmap.output,
             de=["dge", "dge_te"],
+            outdir=config["outdir"],
         ),
         expand(
             rules.volcano_MA.output,
             de=["dge", "dte", "dtu", "dge_te"],
             contrast=config["de"]["contrasts"].keys(),
+            outdir=config["outdir"],
         ),
         expand(
             rules.gsea.output,
@@ -48,6 +69,14 @@ rule all:
                 "go",
             ],
             contrast=config["de"]["contrasts"].keys(),
+            outdir=config["outdir"],
         ),
-        expand(rules.ora.output, contrast=config["de"]["contrasts"].keys()),
-        rules.multiqc.output,
+        expand(
+            rules.ora.output,
+            contrast=config["de"]["contrasts"].keys(),
+            outdir=config["outdir"],
+        ),
+        expand(
+            rules.multiqc.output,
+            outdir=config["outdir"],
+        ),
