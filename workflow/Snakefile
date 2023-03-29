@@ -25,7 +25,8 @@ include: "rules/quant.smk"
 include: "rules/qc.smk"
 include: "rules/de.smk"
 
-print("Contrasts are {}".format(*config['de']['contrasts'].keys()))
+
+print("Contrasts are {}".format(*config["de"]["contrasts"].keys()))
 
 
 rule all:
@@ -46,11 +47,7 @@ rule all:
                 "tft",
                 "go",
             ],
-            contrast=config["de"]["contrasts"].keys()
+            contrast=config["de"]["contrasts"].keys(),
         ),
-        expand(
-            rules.ora.output,
-            contrast=config["de"]["contrasts"].keys()
-        ),
+        expand(rules.ora.output, contrast=config["de"]["contrasts"].keys()),
         rules.multiqc.output,
-
