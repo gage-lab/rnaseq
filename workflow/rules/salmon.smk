@@ -4,10 +4,10 @@ rule salmon_quant:
         txome=expand(rules.get_ref.output, file="txome.fa", allow_missing=True),
         gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
     output:
-        quant_tx="{outdir}/salmon_quant/{sample}/quant.sf",
-        quant_ge="{outdir}/salmon_quant/{sample}/quant.genes.sf",
+        quant_tx="{outdir}/map_count/{sample}/quant.sf",
+        quant_ge="{outdir}/map_count/{sample}/quant.genes.sf",
     log:
-        "{outdir}/salmon_quant/{sample}/logs/salmon_quant.log",
+        "{outdir}/map_count/{sample}/logs/salmon_quant.log",
     params:
         libtype="A",
         numBootstraps=config["salmon"]["numBootstraps"],

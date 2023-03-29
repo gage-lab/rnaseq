@@ -9,11 +9,11 @@ rule deseq_swish:
         txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
         samplesheet=config["samples"],
     output:
-        dge="{outdir}/dge/dge.rds",  # differential gene expression
-        dte="{outdir}/dte/dte.rds",  # differential transcript expression
-        dtu="{outdir}/dtu/dtu.rds",  # differential transcript usage
+        dge="{outdir}/de/dge.rds",  # differential gene expression
+        dte="{outdir}/de/dte.rds",  # differential transcript expression
+        dtu="{outdir}/de/dtu.rds",  # differential transcript usage
     log:
-        "{outdir}/deseq_swish.log",
+        "{outdir}/de/deseq_swish.log",
     params:
         model=config["de"]["model"],
     conda:
@@ -33,9 +33,9 @@ rule deseq_tetranscripts:
         rmsk_gtf=expand(rules.get_ref.output, file="rmsk.gtf", allow_missing=True),
         samplesheet=config["samples"],
     output:
-        "{outdir}/dge_te/dge_te.rds",
+        "{outdir}/de/dge_te.rds",
     log:
-        log="{outdir}/dge_te/deseq_tetranscripts.log",
+        log="{outdir}/de/deseq_tetranscripts.log",
     params:
         model=config["de"]["model"],
     conda:
@@ -48,10 +48,10 @@ rule pca_heatmap:
     input:
         rules.deseq_swish.output,
     output:
-        pca="{outdir}/{de}/pca.pdf",
-        heatmap="{outdir}/{de}/heatmaps.pdf",
+        pca="{outdir}/de/{de}_pca.pdf",
+        heatmap="{outdir}/de/{de}_heatmaps.pdf",
     log:
-        "{outdir}/{de}/pca_heatmap.log",
+        "{outdir}/de/{de}_pca_heatmap.log",
     params:
         model=config["de"]["model"],
     conda:
@@ -62,11 +62,11 @@ rule pca_heatmap:
 
 rule results:
     input:
-        "{outdir}/{de}/{de}.rds",
+        "{outdir}/de/{de}.rds",
     output:
-        "{outdir}/{de}/{contrast}_results.csv",
+        "{outdir}/de/{contrast}/{de}_results.csv",
     log:
-        "{outdir}/{de}/{contrast}_results.log",
+        "{outdir}/de/{contrast}/{de}_results.log",
     params:
         model=config["de"]["model"],
     conda:
@@ -79,10 +79,10 @@ rule volcano_MA:
     input:
         rules.results.output,
     output:
-        MA_plot="{outdir}/{de}/{contrast}_MA.svg",
-        volcano_plot="{outdir}/{de}/{contrast}_volcano.svg",
+        MA_plot="{outdir}/de/{contrast}/{de}_MA.svg",
+        volcano_plot="{outdir}/de/{contrast}/{de}_volcano.svg",
     log:
-        "{outdir}/{de}/{contrast}_volcano_MA.log",
+        "{outdir}/de/{contrast}/{de}_volcano_MA.log",
     params:
         LFCcutoff=config["de"]["cutoffs"]["log2FoldChange"],
         FDRcutoff=config["de"]["cutoffs"]["FDR"],
@@ -98,9 +98,9 @@ rule volcano_MA:
 
 rule make_gs_df:
     output:
-        "{outdir}/dge/gsea/{gs}_genesets.tsv",
+        "{outdir}/de/{gs}_genesets.tsv",
     log:
-        "{outdir}/dge/gsea/{gs}_genesets.log",
+        "{outdir}/de/{gs}_genesets.log",
     conda:
         "../envs/de.yaml"
     wildcard_constraints:
@@ -114,9 +114,9 @@ rule gsea:
         dge=expand(rules.results.output, de="dge", allow_missing=True),
         gs_df=rules.make_gs_df.output,
     output:
-        results="{outdir}/dge/gsea/{gs}/{contrast}_results.tsv",
+        results="{outdir}/de/{contrast}/{gs}_gsea.tsv",
     log:
-        "{outdir}/dge/gsea/{gs}/{contrast}.log",
+        "{outdir}/de/{contrast}/{gs}_gsea.log",
     conda:
         "../envs/de.yaml"
     script:
@@ -127,10 +127,10 @@ rule ora:
     input:
         dge=expand(rules.results.output, de="dge", allow_missing=True),
     output:
-        resultsUP="{outdir}/dge/ora/{contrast}_UP.tsv",
-        resultsDOWN="{outdir}/dge/ora/{contrast}_DOWN.tsv",
+        resultsUP="{outdir}/de/{contrast}/up_ora.tsv",
+        resultsDOWN="{outdir}/de/{contrast}/down_ora.tsv",
     log:
-        "{outdir}/dge/ora/{contrast}.log",
+        "{outdir}/de/{contrast}/ora.log",
     params:
         LFCcutoff=config["de"]["cutoffs"]["log2FoldChange"],
         FDRcutoff=config["de"]["cutoffs"]["FDR"],
