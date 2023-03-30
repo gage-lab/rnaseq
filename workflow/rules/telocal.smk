@@ -23,7 +23,7 @@ rule telocal_count:
             -b {input.bam} \
             --GTF {input.txome_gtf} --TE {input.rmsk_ind} \
             --mode {params.mode} \
-            --project $(dirname {output})/$(basename {output} .cntTable) \
+            --project $(dirname {output})/$(basename {output} -s .cntTable) \
             --stranded {params.strandedness} \
             --sortByPos --verbose 3
         """
