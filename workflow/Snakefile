@@ -45,6 +45,7 @@ date = os.popen("date").read()
 with open(os.path.join(config["outdir"], "pipeline_info.txt"), "w") as f:
     f.write(f"Started pipeline on {date}\nUsed {remote} On commit {commit}\n")
 
+
 def is_paired_end(sample):
     if "fq2" not in samples.columns:
         return False
@@ -115,4 +116,3 @@ rule all:
             rules.multiqc.output,
             outdir=config["outdir"],
         ),
-
