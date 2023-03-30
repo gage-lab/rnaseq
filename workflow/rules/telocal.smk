@@ -1,22 +1,5 @@
-rule install_telocal:
-    output:
-        directory("{outdir}/resources/TElocal"),
-    conda:
-        "../envs/telocal.yaml"
-    log:
-        "{outdir}/resources/install_telocal.log",
-    shell:
-        """
-        touch {log} && exec >> {log} 2>&1
-        git clone https://github.com/mhammell-laboratory/TElocal.git {output}
-        cd {output}
-        python setup.py install
-        """
-
-
 rule telocal_count:
     input:
-        telocal=rules.install_telocal.output,
         bam=rules.samtools_sort.output,
         bai=rules.samtools_index.output,
         txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
@@ -34,6 +17,7 @@ rule telocal_count:
         mode="multi",
     shell:
         """
+        touch {log} && exec >> {log} 2>&1
         mkdir -p $(dirname {output})
         TElocal \
             -b {input.bam} \
@@ -41,7 +25,7 @@ rule telocal_count:
             --mode {params.mode} \
             --project $(dirname {output})/$(basename {output} .cntTable) \
             --stranded {params.strandedness} \
-            --sortByPos --verbose 3 2> {log}
+            --sortByPos --verbose 3
         """
 
 
