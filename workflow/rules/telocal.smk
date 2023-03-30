@@ -59,4 +59,4 @@ rule telocal_quant:
     conda:
         "../envs/telocal.yaml"
     script:
-        "../scripts/telocal_quant.py"
+        "../scripts/te_quant.py"

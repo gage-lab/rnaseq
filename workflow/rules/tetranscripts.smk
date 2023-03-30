@@ -1,16 +1,3 @@
-# TODO: get strandedness from salmon output instead of samples.tsv
-def get_strandedness(wildcards):
-    s = samples.loc[wildcards.sample]["strandedness"]
-    if pd.isnull(s) or s == "unstranded":
-        return "no"
-    elif s == "forward":
-        return "forward"
-    elif s == "reverse":
-        return "reverse"
-    else:
-        raise ValueError("Invalid strandedness value")
-
-
 rule tetranscripts_count:
     input:
         bam=rules.samtools_sort.output,
@@ -30,6 +17,7 @@ rule tetranscripts_count:
         mode="multi",
     shell:
         """
+        touch {log} && exec >> {log} 2>&1
         mkdir -p $(dirname {output})
         TEcount \
             -b {input.bam} \
@@ -37,10 +25,11 @@ rule tetranscripts_count:
             --mode {params.mode} \
             --stranded {params.strandedness} \
             --sortByPos --verbose 3 \
-            --outdir $(dirname {output}) 2> {log}
+            --outdir $(dirname {output})
         """
 
 
+# convert counts into TPM, make compatible with tximport
 rule tetranscripts_quant:
     input:
         counts=rules.tetranscripts_count.output,
@@ -53,4 +42,4 @@ rule tetranscripts_quant:
     conda:
         "../envs/tetranscripts.yaml"
     script:
-        "../scripts/tetranscripts_quant.py"
+        "../scripts/te_quant.py"

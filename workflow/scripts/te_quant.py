@@ -19,15 +19,20 @@ if __name__ == "__main__":
     # Read in gtf files
     genes = gtfparse.read_gtf(snakemake.input.txome_gtf[0])
     rmsk = gtfparse.read_gtf(snakemake.input.rmsk_gtf[0])
-    rmsk["gene_id"] = (
-        rmsk["transcript_id"]
-        + ":"
-        + rmsk["gene_id"]
-        + ":"
-        + rmsk["family_id"]
-        + ":"
-        + rmsk["class_id"]
-    )
+    if "telocal" in snakemake.input.counts[0]:
+        rmsk["gene_id"] = (
+            rmsk["transcript_id"]
+            + ":"
+            + rmsk["gene_id"]
+            + ":"
+            + rmsk["family_id"]
+            + ":"
+            + rmsk["class_id"]
+        )
+    elif "tetranscripts" in snakemake.input.counts[0]:
+        rmsk["gene_id"] = (
+            +rmsk["gene_id"] + ":" + rmsk["family_id"] + ":" + rmsk["class_id"]
+        )
     joint = pd.concat(
         [gene_len(genes[genes["feature"] == "transcript"]), gene_len(rmsk)]
     )
