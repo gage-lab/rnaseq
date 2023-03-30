@@ -34,7 +34,6 @@ rule telocal_count:
         mode="multi",
     shell:
         """
-        touch {log} && exec >> {log} 2>&1
         mkdir -p $(dirname {output})
         TElocal \
             -b {input.bam} \
@@ -42,7 +41,7 @@ rule telocal_count:
             --mode {params.mode} \
             --project $(dirname {output})/$(basename {output} .cntTable) \
             --stranded {params.strandedness} \
-            --sortByPos --verbose 3
+            --sortByPos --verbose 3 2> {log}
         """
 
 
