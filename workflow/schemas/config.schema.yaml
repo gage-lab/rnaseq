@@ -25,6 +25,7 @@ properties:
       - txome.fa
       - txome.gtf
       - rmsk.gtf
+      - rmsk.locInd
 
   trimming:
     type: object
