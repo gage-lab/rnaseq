@@ -26,6 +26,9 @@ samples = (
 )
 validate(samples, "schemas/samples.schema.yaml")
 
+# create outdir if it doesn't exist
+os.system("mkdir -p {}".format(config["outdir"]))
+
 # copy config, samplesheet to output directory
 shutil.copy("config/config.yaml", config["outdir"])
 shutil.copy(config["samples"], config["outdir"])
@@ -36,8 +39,6 @@ commit = os.popen("git rev-parse HEAD").read()
 date = os.popen("date").read()
 
 # TODO: don't write if in dryrun mode
-# create outdir if it doesn't exist
-os.system("mkdir -p {}".format(config["outdir"]))
 f = open(os.path.join(config["outdir"], "pipeline_info.txt"), "w")
 f.write(f"Started pipeline on {date}\nUsed {remote} On commit {commit}\n")
 
@@ -99,7 +100,3 @@ rule all:
             outdir=config["outdir"],
         ),
 
-
-date = os.popen("date").read()
-f.write(f"Finished pipeline on {date}")
-f.close()
