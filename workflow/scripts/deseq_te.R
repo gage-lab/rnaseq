@@ -10,32 +10,19 @@ suppressPackageStartupMessages({
   library(tximeta)
   library(AnnotationDbi)
   library(org.Hs.eg.db)
+  library(org.Mm.eg.db)
   library(DESeq2)
   library(glue)
 })
 snakemake@source("utilities.R")
 options(readr.show_col_types = FALSE)
 
-
-# make coldata for tximeta
-coldata <- readr::read_tsv(snakemake@input$samplesheet)
-
-files <- snakemake@input$quant
-names(files) <- basename(dirname(dirname(files)))
-
-coldata$files <- files[match(coldata$sample_name, names(files))]
-coldata$names <- coldata$sample_name
-coldata <- dplyr::select(coldata, -starts_with("fq"), -sample_name, -strandedness)
-
-# remove low-quality samples
-print(paste0("Removing samples: ", paste(snakemake@params[["samples_exclude"]], collapse = ", ")))
-coldata <- dplyr::filter(coldata, !names %in% snakemake@params[["samples_exclude"]])
-
-# get info from GTF
-gene_gtf <- rtracklayer::readGFF(snakemake@input[["txome_gtf"]]) %>%
-  dplyr::select(gene_id, gene_type, gene_name) %>%
-  dplyr::distinct() %>%
-  tibble::column_to_rownames("gene_id")
+# set orgdb
+if (snakemake@config$species == "human") {
+  orgdb <- org.Hs.eg.db
+} else if (snakemake@config$species == "mouse") {
+  orgdb <- org.Mm.eg.db
+}
 
 # handle output of TEtranscripts vs TElocal
 if (snakemake@wildcards$quant_level == "subfamily") {
@@ -52,8 +39,31 @@ if (snakemake@wildcards$quant_level == "subfamily") {
     tibble::column_to_rownames("gene_id")
 }
 
+# make coldata for tximeta
+coldata <- readr::read_tsv(snakemake@input$samplesheet)
+
+files <- snakemake@input$quant
+names(files) <- basename(dirname(dirname(files)))
+
+coldata$files <- files[match(coldata$sample_name, names(files))]
+coldata$names <- coldata$sample_name
+coldata <- dplyr::select(coldata, -starts_with("fq"), -sample_name, -strandedness)
+
+# remove low-quality samples
+if (length(snakemake@config[["samples_exclude"]]) > 0) {
+  stopifnot(all(snakemake@config[["samples_exclude"]] %in% coldata$names))
+  print(paste0("Removing samples: ", paste(snakemake@config[["samples_exclude"]], collapse = ", ")))
+  coldata <- dplyr::filter(coldata, !names %in% snakemake@config[["samples_exclude"]])
+}
+
+# get info from GTF
+gene_gtf <- rtracklayer::readGFF(snakemake@input[["txome_gtf"]]) %>%
+  dplyr::select(gene_id, gene_type, gene_name) %>%
+  dplyr::distinct() %>%
+  tibble::column_to_rownames("gene_id")
+
 # DESeq
-print("Reading TEtranscripts quantifications for DESeq")
+print("Reading TE quantifications for DESeq")
 se <- tximeta::tximeta(
   coldata,
   type = "none",
@@ -66,18 +76,23 @@ se <- tximeta::tximeta(
   skipMeta = TRUE
 )
 
+# remove lowly expressed genes/TEs
+se <- rm_lowexp(se)
+
 # add alternative names/ids
 keys <- stringr::str_remove(rownames(rowData(se)), "\\..*$")
-se <- add_ids(se, keys, gene_gtf, c("gene_name"))
-if (snakemake@wildcards$quant_level == "subfamily") {
-  se <- add_ids(se, keys, rmsk_gtf, c("class_id", "family_id"))
-} else if (snakemake@wildcards$quant_level == "locus") {
-  se <- add_ids(se, keys, rmsk_gtf, c("class_id", "family_id", "locus_id"))
+se <- add_ids(se, keys, gene_gtf, c("gene_name"), orgdb = orgdb)
+
+rowData(se)[["class_id"]] <- rmsk_gtf[rownames(se), ][["class_id"]]
+rowData(se)[["family_id"]] <- rmsk_gtf[rownames(se), ][["family_id"]]
+
+if (snakemake@wildcards$quant_level == "locus") {
+  rowData(se)[["locus_id"]] <- rmsk_gtf[rownames(se), ][["locus_id"]]
 }
+
 rowData(se)$gene_name[is.na(rowData(se)$gene_name)] <- rownames(rowData(se))[is.na(rowData(se)$gene_name)]
 
 # Fit DESeq model
-se <- rm_lowexp(se) # remove lowly expressed genes
 form <- as.formula(snakemake@params$model)
 dds <- DESeq2::DESeqDataSet(se, form)
 print("Fitting DESeq model for differential gene expression (DGE) with transposable elements (TEs)")

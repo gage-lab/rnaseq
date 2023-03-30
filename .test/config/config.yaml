@@ -8,6 +8,8 @@ ref:
   rmsk.gtf: ngs-test-data/rnaseq/ref/rmsk.chr21.gtf
   rmsk.locInd: https://labshare.cshl.edu/shares/mhammelllab/www-data/TElocal/prebuilt_indices/GRCh38_GENCODE_rmsk_TE.gtf.locInd.gz
 
+species: human # can be mouse or human
+
 trimming:
   activate: True
 

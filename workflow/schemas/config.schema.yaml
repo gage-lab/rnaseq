@@ -11,6 +11,12 @@ properties:
   outdir:
     type: string
 
+  species:
+    type: string
+    enum:
+      - mouse
+      - human
+
   ref:
     type: object
     properties:
@@ -36,5 +42,6 @@ properties:
 required:
   - samples
   - outdir
+  - species
   - ref
   - trimming
