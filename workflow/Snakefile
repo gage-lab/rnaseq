@@ -26,6 +26,9 @@ samples = (
 )
 validate(samples, "schemas/samples.schema.yaml")
 
+# create outdir if it doesn't exist
+os.system("mkdir -p {}".format(config["outdir"]))
+
 # copy config, samplesheet to output directory
 # TODO: don't write if in dryrun mode
 if not os.path.exists(config["outdir"]):
@@ -41,7 +44,6 @@ date = os.popen("date").read()
 
 with open(os.path.join(config["outdir"], "pipeline_info.txt"), "w") as f:
     f.write(f"Started pipeline on {date}\nUsed {remote} On commit {commit}\n")
-
 
 def is_paired_end(sample):
     if "fq2" not in samples.columns:
@@ -113,3 +115,4 @@ rule all:
             rules.multiqc.output,
             outdir=config["outdir"],
         ),
+
