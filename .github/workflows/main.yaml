@@ -31,12 +31,6 @@ jobs:
         with:
           lfs: true
           submodules: recursive
-      - name: Snakemake cache
-        id: cache-sm
-        uses: actions/cache@v3
-        with:
-          path: .test/results/resources
-          key: ${{ runner.os }}-sm
       - name: Setup Mamba
         uses: conda-incubator/setup-miniconda@v2
         with:
