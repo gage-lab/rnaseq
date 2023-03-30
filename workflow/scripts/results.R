@@ -49,10 +49,11 @@ if (snakemake@wildcards[["de"]] %in% c("dge", "dge_te_subfamily", "dge_te_locus"
   # run swish for DTE/DTU
   print(glue("Running Swish for {condition}: {condition1} vs {condition2} for {toupper(snakemake@wildcards[['de']])} analysis"))
   se <- se[, se[[condition]] %in% c(condition1, condition2)] # only keep two conditions for test
-  se$condition <- factor(se[[condition]], levels = c(condition1, condition2)) # set condition as factor
+  se[[terms[1]]] <- as.factor(se[[terms[1]]]) # set condition as factor
 
   # run swish
   if (length(terms) == 2) {
+    se[[terms[2]]] <- as.factor(se[[terms[2]]]) # set condition as factor
     dte <- fishpond::swish(y = se, x = terms[1], cov = terms[2])
   } else if (length(terms) == 1) {
     dte <- fishpond::swish(y = se, x = terms[1])
