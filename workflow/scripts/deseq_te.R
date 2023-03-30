@@ -36,11 +36,21 @@ gene_gtf <- rtracklayer::readGFF(snakemake@input[["txome_gtf"]]) %>%
   dplyr::select(gene_id, gene_type, gene_name) %>%
   dplyr::distinct() %>%
   tibble::column_to_rownames("gene_id")
-rmsk_gtf <- rtracklayer::readGFF(snakemake@input[["rmsk_gtf"]]) %>%
-  dplyr::select(gene_id, family_id, class_id) %>%
-  dplyr::mutate(subfamily_id = gene_id, gene_id = paste(gene_id, family_id, class_id, sep = ":")) %>%
-  dplyr::distinct() %>%
-  tibble::column_to_rownames("gene_id")
+
+# handle output of TEtranscripts vs TElocal
+if (snakemake@wildcards$quant_level == "subfamily") {
+  rmsk_gtf <- rtracklayer::readGFF(snakemake@input[["rmsk_gtf"]]) %>%
+    dplyr::select(gene_id, family_id, class_id) %>%
+    dplyr::mutate(subfamily_id = gene_id, gene_id = paste(gene_id, family_id, class_id, sep = ":")) %>%
+    dplyr::distinct() %>%
+    tibble::column_to_rownames("gene_id")
+} else if (snakemake@wildcards$quant_level == "locus") {
+  rmsk_gtf <- rtracklayer::readGFF(snakemake@input[["rmsk_gtf"]]) %>%
+    dplyr::select(transcript_id, gene_id, family_id, class_id) %>%
+    dplyr::mutate(locus_id = transcript_id, subfamily_id = gene_id, gene_id = paste(transcript_id, gene_id, family_id, class_id, sep = ":")) %>%
+    dplyr::distinct() %>%
+    tibble::column_to_rownames("gene_id")
+}
 
 # DESeq
 print("Reading TEtranscripts quantifications for DESeq")
@@ -59,7 +69,11 @@ se <- tximeta::tximeta(
 # add alternative names/ids
 keys <- stringr::str_remove(rownames(rowData(se)), "\\..*$")
 se <- add_ids(se, keys, gene_gtf, c("gene_name"))
-se <- add_ids(se, keys, rmsk_gtf, c("class_id", "family_id", "subfamily_id"))
+if (snakemake@wildcards$quant_level == "subfamily") {
+  se <- add_ids(se, keys, rmsk_gtf, c("class_id", "family_id"))
+} else if (snakemake@wildcards$quant_level == "locus") {
+  se <- add_ids(se, keys, rmsk_gtf, c("class_id", "family_id", "locus_id"))
+}
 rowData(se)$gene_name[is.na(rowData(se)$gene_name)] <- rownames(rowData(se))[is.na(rowData(se)$gene_name)]
 
 # Fit DESeq model

@@ -85,12 +85,12 @@ rule all:
     input:
         expand(
             rules.pca_heatmap.output,
-            de=["dge", "dge_te"],
+            de=["dge", "dge_te_subfamily", "dge_te_locus"],
             outdir=config["outdir"],
         ),
         expand(
             rules.volcano_MA.output,
-            de=["dge", "dte", "dtu", "dge_te"],
+            de=["dge", "dte", "dtu", "dge_te_subfamily", "dge_te_locus"],
             contrast=config["de"]["contrasts"].keys(),
             outdir=config["outdir"],
         ),

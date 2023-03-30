@@ -27,7 +27,7 @@ condition1 <- stringr::str_split_1(coef, "_vs_")[1] %>%
 condition2 <- stringr::str_split_1(coef, "_vs_")[2]
 
 contrast <- c(condition, condition1, condition2)
-if (snakemake@wildcards[["de"]] %in% c("dge", "dge_te")) {
+if (snakemake@wildcards[["de"]] %in% c("dge", "dge_te_subfamily", "dge_te_locus")) {
   # get results
   print(glue("Getting DESeq2 results for {condition}: {condition1} vs {condition2}"))
   res <- DESeq2::results(se, contrast = contrast, cooksCutoff = FALSE)
