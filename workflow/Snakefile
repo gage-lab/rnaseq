@@ -27,6 +27,10 @@ samples = (
 validate(samples, "schemas/samples.schema.yaml")
 
 # copy config, samplesheet to output directory
+# TODO: don't write if in dryrun mode
+if not os.path.exists(config["outdir"]):
+    os.makedirs(config["outdir"])
+
 shutil.copy("config/config.yaml", config["outdir"])
 shutil.copy(config["samples"], config["outdir"])
 
@@ -35,11 +39,8 @@ remote = os.popen("git remote get-url origin").read()
 commit = os.popen("git rev-parse HEAD").read()
 date = os.popen("date").read()
 
-# TODO: don't write if in dryrun mode
-# create outdir if it doesn't exist
-os.system("mkdir -p {}".format(config["outdir"]))
-f = open(os.path.join(config["outdir"], "pipeline_info.txt"), "w")
-f.write(f"Started pipeline on {date}\nUsed {remote} On commit {commit}\n")
+with open(os.path.join(config["outdir"], "pipeline_info.txt"), "w") as f:
+    f.write(f"Started pipeline on {date}\nUsed {remote} On commit {commit}\n")
 
 
 def is_paired_end(sample):
@@ -56,12 +57,26 @@ def is_paired_end(sample):
     return all_paired
 
 
+# TODO: get strandedness from salmon output instead of samples.tsv
+def get_strandedness(wildcards):
+    s = samples.loc[wildcards.sample]["strandedness"]
+    if pd.isnull(s) or s == "unstranded":
+        return "no"
+    elif s == "forward":
+        return "forward"
+    elif s == "reverse":
+        return "reverse"
+    else:
+        raise ValueError("Invalid strandedness value")
+
+
 ##### source snakemake rule files #####
 include: "rules/ref.smk"
 include: "rules/trim_galore.smk"
 include: "rules/star.smk"
 include: "rules/salmon.smk"
 include: "rules/tetranscripts.smk"
+include: "rules/telocal.smk"
 include: "rules/qc.smk"
 include: "rules/de.smk"
 
@@ -98,8 +113,3 @@ rule all:
             rules.multiqc.output,
             outdir=config["outdir"],
         ),
-
-
-date = os.popen("date").read()
-f.write(f"Finished pipeline on {date}")
-f.close()
