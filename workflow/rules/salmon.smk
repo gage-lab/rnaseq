@@ -7,7 +7,7 @@ rule salmon_quant:
         quant_tx="{outdir}/map_count/{sample}/salmon/quant.sf",
         quant_ge="{outdir}/map_count/{sample}/salmon/quant.genes.sf",
     log:
-        "{outdir}/map_count/{sample}/logs/salmon_quant.log",
+        "{outdir}/map_count/{sample}/salmon/log.orr",
     params:
         libtype="A",
         numBootstraps=config["salmon"]["numBootstraps"],
@@ -17,6 +17,7 @@ rule salmon_quant:
         "../envs/salmon.yaml"
     shell:
         """
+        touch {log} && exec >> {log} 2>&1
         salmon quant \
             --threads {threads} \
             --geneMap {input.gtf} \
@@ -25,5 +26,5 @@ rule salmon_quant:
             -t {input.txome} \
             -a {input.bam} \
             -o $(dirname {output.quant_tx}) \
-        {params.extra} &> /dev/null
+        {params.extra}
         """

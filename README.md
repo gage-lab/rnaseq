@@ -20,6 +20,9 @@ Analysis pipeline for single-end or paired-end Illumina RNA-seq experiments
 
 ## TODO
 
-- [ ] add TElocal
+- [ ] fix TElocal testing (running out of memory)
+- [ ] Put volcano and MA plots into one pdf per contrast per diff analysis
+- [ ] Fix QC to show each run for STAR and Salmon
 - [ ] get strandedness from salmon output instead of samples.tsv
 - [ ] add usage and contribution docs
+- [ ] Change print statements to message statements in R scripts (they get printed to the log file)

@@ -22,26 +22,37 @@ rule deseq_swish:
         "../scripts/deseq_swish.R"
 
 
-rule deseq_tetranscripts:
-    input:
-        quant=expand(
+def get_deseq_te_input(wildcards):
+    if wildcards.quant_level == "subfamily":
+        return expand(
             rules.tetranscripts_quant.output,
             sample=samples["sample_name"],
             allow_missing=True,
-        ),
+        )
+    elif wildcards.quant_level == "locus":
+        return expand(
+            rules.telocal_quant.output,
+            sample=samples["sample_name"],
+            allow_missing=True,
+        )
+
+
+rule deseq_te:
+    input:
+        quant=get_deseq_te_input,
         txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
         rmsk_gtf=expand(rules.get_ref.output, file="rmsk.gtf", allow_missing=True),
         samplesheet=config["samples"],
     output:
-        "{outdir}/de/dge_te.rds",
+        "{outdir}/de/dge_te_{quant_level}.rds",
     log:
-        log="{outdir}/de/logs/deseq_tetranscripts.log",
+        log="{outdir}/de/logs/deseq_te_{quant_level}.log",
     params:
         model=config["de"]["model"],
     conda:
         "../envs/de.yaml"
     script:
-        "../scripts/deseq_tetrancripts.R"
+        "../scripts/deseq_te.R"
 
 
 rule pca_heatmap:
@@ -88,7 +99,7 @@ rule volcano_MA:
         FDRcutoff=config["de"]["cutoffs"]["FDR"],
         max_overlaps=15,
         label=lambda wc: "gene_name"
-        if wc.de == "dge" or "dge_te"
+        if wc.de == "dge" or "dge_te_subfamily" or "dge_te_locus"
         else "transcript_name",
     conda:
         "../envs/de.yaml"

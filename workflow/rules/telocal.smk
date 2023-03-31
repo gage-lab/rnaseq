@@ -1,17 +1,15 @@
-rule tetranscripts_count:
+rule telocal_count:
     input:
         bam=rules.samtools_sort.output,
         bai=rules.samtools_index.output,
         txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
-        rmsk_gtf=expand(rules.get_ref.output, file="rmsk.gtf", allow_missing=True),
+        rmsk_ind=expand(rules.get_ref.output, file="rmsk.locInd", allow_missing=True),
     output:
-        "{outdir}/map_count/{sample}/tetranscripts/TEtranscripts_out.cntTable",
+        "{outdir}/map_count/{sample}/telocal/TElocal_out.cntTable",
     conda:
-        "../envs/tetranscripts.yaml"
-    shadow:
-        "shallow"
+        "../envs/telocal.yaml"
     log:
-        "{outdir}/map_count/{sample}/tetranscripts/TEtranscripts.err",
+        "{outdir}/map_count/{sample}/telocal/telocal.err",
     params:
         strandedness=get_strandedness,
         mode="multi",
@@ -19,27 +17,27 @@ rule tetranscripts_count:
         """
         touch {log} && exec >> {log} 2>&1
         mkdir -p $(dirname {output})
-        TEcount \
+        TElocal \
             -b {input.bam} \
-            --GTF {input.txome_gtf} --TE {input.rmsk_gtf} \
+            --GTF {input.txome_gtf} --TE {input.rmsk_ind} \
             --mode {params.mode} \
+            --project $(dirname {output})/$(basename {output} .cntTable) \
             --stranded {params.strandedness} \
-            --sortByPos --verbose 3 \
-            --outdir $(dirname {output})
+            --sortByPos --verbose 3
         """
 
 
 # convert counts into TPM, make compatible with tximport
-rule tetranscripts_quant:
+rule telocal_quant:
     input:
-        counts=rules.tetranscripts_count.output,
+        counts=rules.telocal_count.output,
         txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
         rmsk_gtf=expand(rules.get_ref.output, file="rmsk.gtf", allow_missing=True),
     output:
-        "{outdir}/map_count/{sample}/tetranscripts/TEtranscripts_out.quant",
+        "{outdir}/map_count/{sample}/telocal/TElocal_out.quant",
     log:
-        "{outdir}/map_count/{sample}/tetranscripts/quant.err",
+        "{outdir}/map_count/{sample}/telocal/quant.err",
     conda:
-        "../envs/tetranscripts.yaml"
+        "../envs/telocal.yaml"
     script:
         "../scripts/te_quant.py"

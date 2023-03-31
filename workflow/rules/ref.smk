@@ -1,8 +1,13 @@
 def get_ref_input(wildcards):
     if config["ref"][wildcards.file].startswith("ftp"):
-        return FTP.remote(config["ref"][wildcards.file], static=True)
+        return FTP.remote(
+            config["ref"][wildcards.file],
+            static=True,
+            keep_local=True,
+            immediate_close=True,
+        )
     elif config["ref"][wildcards.file].startswith("http"):
-        return HTTP.remote(config["ref"][wildcards.file], static=True)
+        return HTTP.remote(config["ref"][wildcards.file], static=True, keep_local=True)
     elif os.path.exists(config["ref"][wildcards.file]):
         return config["ref"][wildcards.file]
     else:

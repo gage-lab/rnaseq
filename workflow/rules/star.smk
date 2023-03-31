@@ -42,7 +42,7 @@ rule star_align:
         log_final="{outdir}/map_count/{sample}/star/Log.final.out",
     threads: 8
     log:
-        "{outdir}/map_count/{sample}/Log.err",
+        "{outdir}/map_count/{sample}/star/Log.err",
     params:
         # these parameters are optimized to retain multimapping reads
         # TODO: add description of each parameter

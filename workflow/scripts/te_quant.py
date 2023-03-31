@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Created on: 10/26/22, 1:59 PM
+# Created on: Mar 29, 2023 at 4:42:23 PM
 __author__ = "Michael Cuoco"
 
 import gtfparse
@@ -19,7 +19,20 @@ if __name__ == "__main__":
     # Read in gtf files
     genes = gtfparse.read_gtf(snakemake.input.txome_gtf[0])
     rmsk = gtfparse.read_gtf(snakemake.input.rmsk_gtf[0])
-    rmsk["gene_id"] = rmsk["gene_id"] + ":" + rmsk["family_id"] + ":" + rmsk["class_id"]
+    if "telocal" in snakemake.input.counts[0]:
+        rmsk["gene_id"] = (
+            rmsk["transcript_id"]
+            + ":"
+            + rmsk["gene_id"]
+            + ":"
+            + rmsk["family_id"]
+            + ":"
+            + rmsk["class_id"]
+        )
+    elif "tetranscripts" in snakemake.input.counts[0]:
+        rmsk["gene_id"] = (
+            +rmsk["gene_id"] + ":" + rmsk["family_id"] + ":" + rmsk["class_id"]
+        )
     joint = pd.concat(
         [gene_len(genes[genes["feature"] == "transcript"]), gene_len(rmsk)]
     )
@@ -31,7 +44,7 @@ if __name__ == "__main__":
         header=0,
         names=["gene_id", "count"],
         dtype={"gene_id": str, "count": float},
-    ).merge(joint, on="gene_id")
+    ).merge(joint, on="gene_id", how="left")
 
     # compute TPM
     counts["rpk"] = counts["count"] / counts["length"]

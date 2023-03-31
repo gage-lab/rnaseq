@@ -11,6 +11,12 @@ properties:
   outdir:
     type: string
 
+  species:
+    type: string
+    enum:
+      - mouse
+      - human
+
   ref:
     type: object
     properties:
@@ -25,6 +31,7 @@ properties:
       - txome.fa
       - txome.gtf
       - rmsk.gtf
+      - rmsk.locInd
 
   trimming:
     type: object
@@ -35,5 +42,6 @@ properties:
 required:
   - samples
   - outdir
+  - species
   - ref
   - trimming

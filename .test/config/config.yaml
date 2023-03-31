@@ -6,6 +6,9 @@ ref:
   txome.fa: ngs-test-data/rnaseq/ref/txome.chr21.fa
   txome.gtf: ngs-test-data/rnaseq/ref/txome.chr21.gtf
   rmsk.gtf: ngs-test-data/rnaseq/ref/rmsk.chr21.gtf
+  rmsk.locInd: ngs-test-data/rnaseq/ref/rmsk.chr21.gtf.locInd
+
+species: human # can be mouse or human
 
 trimming:
   activate: True
@@ -22,5 +25,5 @@ de:
       - Control
   model: ~condition
   cutoffs:
-    log2FoldChange: 0.1
+    log2FoldChange: 0
     FDR: 1
