@@ -1,0 +1,28 @@
+samples: config/samplesheet.tsv
+outdir: results
+species: human
+
+ref:
+  genome.fa: ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_42/GRCh38.p13.genome.fa.gz
+  txome.fa: ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_42/gencode.v42.transcripts.fa.gz
+  txome.gtf: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_42/gencode.v42.basic.annotation.gtf.gz
+  rmsk.gtf: https://labshare.cshl.edu/shares/mhammelllab/www-data/TEtranscripts/TE_GTF/GRCh38_GENCODE_rmsk_TE.gtf.gz
+  rmsk.locInd: https://labshare.cshl.edu/shares/mhammelllab/www-data/TElocal/prebuilt_indices/GRCh38_GENCODE_rmsk_TE.gtf.locInd.gz
+
+trimming:
+  activate: True
+
+salmon:
+  numBootstraps: 30
+  extra: --gcBias --posBias --seqBias --gencode
+
+de:
+  # contrasts for the deseq2 results method
+  contrasts:
+    celltype_npc_vs_neuron:
+      - npc
+      - neuron
+  model: ~celltype
+  cutoffs:
+    log2FoldChange: 0.5
+    FDR: 0.05
