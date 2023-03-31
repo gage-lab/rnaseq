@@ -17,8 +17,8 @@ ggplot2::theme_set(ggplot2::theme_bw())
 res <- readr::read_csv(snakemake@input[[1]])
 condition1 <- snakemake@wildcards[["condition1"]]
 condition2 <- snakemake@wildcards[["condition2"]]
-FDRcutoff <- snakemake@params[["FDRcutoff"]]
-LFCcutoff <- snakemake@params[["LFCcutoff"]]
+FDRcutoff <- snakemake@config$de$cutoffs$FDR
+LFCcutoff <- snakemake@config$de$cutoffs$log2FoldChange
 # save.image(glue("{snakemake@wildcards[['de']]}_plot.RData")) # for debugging
 
 n_down <- nrow(res[res$padj < FDRcutoff & res$log2FoldChange > LFCcutoff, ])
