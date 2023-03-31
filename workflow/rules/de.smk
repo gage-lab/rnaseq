@@ -90,8 +90,7 @@ rule volcano_MA:
     input:
         rules.results.output,
     output:
-        MA_plot="{outdir}/de/{contrast}/{de}_MA.svg",
-        volcano_plot="{outdir}/de/{contrast}/{de}_volcano.svg",
+        "{outdir}/de/{contrast}/{de}_volcano_MA.pdf",
     log:
         "{outdir}/de/{contrast}/logs/{de}_volcano_MA.log",
     params:
