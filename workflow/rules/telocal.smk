@@ -24,7 +24,7 @@ rule telocal_count:
             --mode {params.mode} \
             --project $(dirname {output})/TElocal_out \
             --stranded {params.strandedness} \
-            --sortByPos --verbose 3 2> {log}
+            --sortByPos --verbose 3
         """
 
 
