@@ -4,6 +4,7 @@ rule salmon_quant:
         txome=expand(rules.get_ref.output, file="txome.fa", allow_missing=True),
         gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
     output:
+        meta_info="{outdir}/map_count/salmon/{sample}/aux_info/meta_info.json",
         quant_tx="{outdir}/map_count/salmon/{sample}/quant.sf",
         quant_ge="{outdir}/map_count/salmon/{sample}/quant.genes.sf",
     log:

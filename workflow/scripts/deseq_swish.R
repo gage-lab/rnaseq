@@ -33,7 +33,7 @@ names(files) <- basename(dirname(files))
 
 coldata$files <- files[match(coldata$sample_name, names(files))]
 coldata$names <- coldata$sample_name
-coldata <- dplyr::select(coldata, -starts_with("fq"), -sample_name, -strandedness)
+coldata <- dplyr::select(coldata, -starts_with("fq"), -sample_name)
 
 # remove low-quality samples
 if (length(snakemake@config[["samples_exclude"]]) > 0) {

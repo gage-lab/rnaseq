@@ -3,7 +3,8 @@ rule tetranscripts_count:
         bam=rules.samtools_sort.output,
         bai=rules.samtools_index.output,
         txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
-        rmsk_gtf=expand(rules.get_ref.output, file="rmsk.gtf", allow_missing=True),
+        rmsk=expand(rules.get_ref.output, file="rmsk.gtf", allow_missing=True),
+        meta_info=rules.salmon_quant.output.meta_info,
     output:
         "{outdir}/map_count/tetranscripts/{sample}/TEtranscripts_out.cntTable",
     conda:
@@ -11,22 +12,11 @@ rule tetranscripts_count:
     shadow:
         "shallow"
     log:
-        "{outdir}/map_count/tetranscripts/{sample}/TEtranscripts.err",
+        "{outdir}/map_count/tetranscripts/{sample}/TEtranscripts.log",
     params:
-        strandedness=get_strandedness,
-        mode="multi",
-    shell:
-        """
-        touch {log} && exec >> {log} 2>&1
-        mkdir -p $(dirname {output})
-        TEcount \
-            -b {input.bam} \
-            --GTF {input.txome_gtf} --TE {input.rmsk_gtf} \
-            --mode {params.mode} \
-            --stranded {params.strandedness} \
-            --sortByPos --verbose 3 \
-            --outdir $(dirname {output})
-        """
+        mode="multi",  # can be multi or uniq
+    script:
+        "../scripts/te_count.py"
 
 
 # convert counts into TPM, make compatible with tximport
