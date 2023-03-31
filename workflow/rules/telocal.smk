@@ -8,8 +8,6 @@ rule telocal_count:
         "{outdir}/map_count/{sample}/telocal/TElocal_out.cntTable",
     conda:
         "../envs/telocal.yaml"
-    shadow:
-        "shallow"
     log:
         "{outdir}/map_count/{sample}/telocal/telocal.err",
     params:
@@ -17,12 +15,13 @@ rule telocal_count:
         mode="multi",
     shell:
         """
+        touch {log} && exec >> {log} 2>&1
         mkdir -p $(dirname {output})
         TElocal \
             -b {input.bam} \
             --GTF {input.txome_gtf} --TE {input.rmsk_ind} \
             --mode {params.mode} \
-            --project $(dirname {output})/TElocal_out \
+            --project $(dirname {output})/$(basename {output} .cntTable) \
             --stranded {params.strandedness} \
             --sortByPos --verbose 3
         """
