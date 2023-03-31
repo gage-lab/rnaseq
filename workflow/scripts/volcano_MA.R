@@ -15,8 +15,6 @@ suppressPackageStartupMessages({
 ggplot2::theme_set(ggplot2::theme_bw())
 
 res <- readr::read_csv(snakemake@input[[1]])
-condition1 <- snakemake@wildcards[["condition1"]]
-condition2 <- snakemake@wildcards[["condition2"]]
 FDRcutoff <- snakemake@config$de$cutoffs$FDR
 LFCcutoff <- snakemake@config$de$cutoffs$log2FoldChange
 # save.image(glue("{snakemake@wildcards[['de']]}_plot.RData")) # for debugging
@@ -28,7 +26,7 @@ n_up <- nrow(res[res$padj < FDRcutoff & res$log2FoldChange < -LFCcutoff, ])
 # label significant features
 res$sig <- res$padj < FDRcutoff
 res$sig[is.na(res$sig)] <- FALSE
-
+pdf(snakemake@output[[1]])
 p <- ggplot() +
   geom_point(data = res[res$sig == F, ], aes(x = log10(baseMean), y = log2FoldChange, color = sig), alpha = 0.5) +
   geom_point(data = res[res$sig == T, ], aes(x = log10(baseMean), y = log2FoldChange, color = sig), alpha = 0.5) +
@@ -42,7 +40,6 @@ p <- ggplot() +
     labels = c(bquote("P"[adj] ~ ">" ~ .(FDRcutoff)), bquote("P"[adj] ~ "<" ~ .(FDRcutoff)))
   ) +
   labs(
-    title = glue("{condition1} vs {condition2}"),
     caption = glue("{n_down} features downregulated; {n_up} features upregulated"),
     color = NULL,
     x = bquote(~ Log[10] ~ "Mean"),
@@ -50,8 +47,7 @@ p <- ggplot() +
   ) +
   theme(plot.title = element_text(face = "bold"))
 
-print(paste0("Saving MA plot to ", snakemake@output[["MA_plot"]]))
-ggplot2::ggsave(snakemake@output[["MA_plot"]], p, width = 10, height = 10)
+print(p)
 
 
 # volcano plot
@@ -96,7 +92,6 @@ p <- ggplot(res, aes(x = log2FoldChange, y = -log10(padj))) +
     point_size = 0.1,
   ) +
   labs(
-    title = glue("{condition1} vs {condition2}"),
     caption = glue("{n_down} features downregulated; {n_up} features upregulated}"),
     size = bquote(~ Log[10] ~ "Mean"),
     color = NULL,
@@ -105,5 +100,5 @@ p <- ggplot(res, aes(x = log2FoldChange, y = -log10(padj))) +
   ) +
   theme(plot.title = element_text(face = "bold"))
 
-print(paste0("Saving volcano plot to ", snakemake@output[["volcano_plot"]]))
-ggplot2::ggsave(snakemake@output[["volcano_plot"]], p, width = 10, height = 10)
+print(p)
+dev.off()
