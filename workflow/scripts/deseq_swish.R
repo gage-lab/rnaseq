@@ -29,7 +29,7 @@ if (snakemake@config$species == "human") {
 coldata <- readr::read_tsv(snakemake@input$samplesheet)
 
 files <- snakemake@input$quant
-names(files) <- basename(dirname(dirname(files)))
+names(files) <- basename(dirname(files))
 
 coldata$files <- files[match(coldata$sample_name, names(files))]
 coldata$names <- coldata$sample_name
@@ -38,7 +38,7 @@ coldata <- dplyr::select(coldata, -starts_with("fq"), -sample_name, -strandednes
 # remove low-quality samples
 if (length(snakemake@config[["samples_exclude"]]) > 0) {
   stopifnot(all(snakemake@config[["samples_exclude"]] %in% coldata$names))
-  print(paste0("Removing samples: ", paste(snakemake@config[["samples_exclude"]], collapse = ", ")))
+  message(paste0("Removing samples: ", paste(snakemake@config[["samples_exclude"]], collapse = ", ")))
   coldata <- dplyr::filter(coldata, !names %in% snakemake@config[["samples_exclude"]])
 }
 
@@ -56,7 +56,7 @@ tx2gene <- dplyr::select(tx_gtf, gene_id, transcript_id) %>%
 rownames(tx_gtf) <- tx_gtf$transcript_id
 
 # DESeq
-print("Reading salmon quantifications for DESeq")
+message("Reading salmon quantifications for DESeq")
 se <- tximeta::tximeta(coldata, txOut = FALSE, tx2gene = tx2gene, skipMeta = TRUE)
 form <- as.formula(snakemake@params$model)
 dds <- DESeq2::DESeqDataSet(se, form)
@@ -67,7 +67,7 @@ keys <- stringr::str_remove(rownames(dds), "\\..*$")
 dds <- add_ids(dds, keys, gene_gtf, c("gene_type", "gene_name"), orgdb = orgdb)
 
 # fit DGE model
-print("Fitting DESeq model for differential gene expression (DGE)")
+message("Fitting DESeq model for differential gene expression (DGE)")
 dds <- DESeq2::DESeq(dds) # Fit DESeq model
 saveRDS(dds, file = snakemake@output[["dge"]]) # save
 
@@ -76,7 +76,7 @@ rm(se)
 rm(dds)
 
 # Swish
-print("Reading salmon quantifications for Swish DTE/DTU")
+message("Reading salmon quantifications for Swish DTE/DTU")
 se <- tximeta::tximeta(coldata, skipMeta = TRUE)
 se <- fishpond::scaleInfReps(se)
 

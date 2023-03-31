@@ -29,11 +29,11 @@ condition2 <- stringr::str_split_1(coef, "_vs_")[2]
 contrast <- c(condition, condition1, condition2)
 if (snakemake@wildcards[["de"]] %in% c("dge", "dge_te_subfamily", "dge_te_locus")) {
   # get results
-  print(glue("Getting DESeq2 results for {condition}: {condition1} vs {condition2}"))
+  message(glue("Getting DESeq2 results for {condition}: {condition1} vs {condition2}"))
   res <- DESeq2::results(se, contrast = contrast, cooksCutoff = FALSE)
 
   # perform LFC shrinkage
-  print("Performing LFC shrinkage")
+  message("Performing LFC shrinkage")
   res <- DESeq2::lfcShrink(dds = se, coef = coef, type = "apeglm", res = res)
 
   # add annotations
@@ -47,7 +47,7 @@ if (snakemake@wildcards[["de"]] %in% c("dge", "dge_te_subfamily", "dge_te_locus"
     dplyr::left_join(df)
 } else if (snakemake@wildcards[["de"]] %in% c("dte", "dtu")) {
   # run swish for DTE/DTU
-  print(glue("Running Swish for {condition}: {condition1} vs {condition2} for {toupper(snakemake@wildcards[['de']])} analysis"))
+  message(glue("Running Swish for {condition}: {condition1} vs {condition2} for {toupper(snakemake@wildcards[['de']])} analysis"))
   se <- se[, se[[condition]] %in% c(condition1, condition2)] # only keep two conditions for test
   se[[terms[1]]] <- as.factor(se[[terms[1]]]) # set condition as factor
 
@@ -67,5 +67,5 @@ if (snakemake@wildcards[["de"]] %in% c("dge", "dge_te_subfamily", "dge_te_locus"
 }
 
 # save results
-print(paste0("Saving results to ", snakemake@output[[1]]))
+message(paste0("Saving results to ", snakemake@output[[1]]))
 readr::write_csv(res, file = snakemake@output[[1]])

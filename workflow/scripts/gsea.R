@@ -38,7 +38,7 @@ gs_list <- purrr::map(unique(gs_df$gs_name), function(gs) {
 names(gs_list) <- unique(gs_df$gs_name)
 
 # run GSEA
-print("Running fgsea...")
+message("Running fgsea...")
 res <- fgsea::fgsea(
   pathways = gs_list,
   stats = ranked
