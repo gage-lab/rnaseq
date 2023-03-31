@@ -45,4 +45,4 @@ jobs:
       - name: Generate test data
         run: cd .test/ngs-test-data && snakemake rnaseq --use-conda --cores 2
       - name: Run workflow
-        run: snakemake all --use-conda --show-failed-logs --cores 2 --conda-cleanup-pkgs cache --all-temp --directory .test
+        run: snakemake all --use-conda --show-failed-logs --cores 1 --conda-cleanup-pkgs cache --all-temp --directory .test
