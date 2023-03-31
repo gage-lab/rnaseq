@@ -7,7 +7,6 @@ sink(file = con, type = "message")
 
 suppressPackageStartupMessages({
   library(tidyverse)
-  library(EnhancedVolcano)
   library(fgsea)
   library(zip)
   library(msigdbr)
@@ -46,4 +45,4 @@ res <- fgsea::fgsea(
 )
 
 # save tabular results
-readr::write_tsv(res, snakemake@output[["results"]])
+readr::write_tsv(res, snakemake@output[[1]])
