@@ -6,7 +6,7 @@ ref:
   txome.fa: ngs-test-data/rnaseq/ref/txome.chr21.fa
   txome.gtf: ngs-test-data/rnaseq/ref/txome.chr21.gtf
   rmsk.gtf: ngs-test-data/rnaseq/ref/rmsk.chr21.gtf
-  rmsk.locInd: https://labshare.cshl.edu/shares/mhammelllab/www-data/TElocal/prebuilt_indices/GRCh38_GENCODE_rmsk_TE.gtf.locInd.gz
+  rmsk.locInd: ngs-test-data/rnaseq/ref/rmsk.chr21.gtf.locInd
 
 species: human # can be mouse or human
 
