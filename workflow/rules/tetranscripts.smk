@@ -5,13 +5,13 @@ rule tetranscripts_count:
         txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
         rmsk_gtf=expand(rules.get_ref.output, file="rmsk.gtf", allow_missing=True),
     output:
-        "{outdir}/map_count/{sample}/tetranscripts/TEtranscripts_out.cntTable",
+        "{outdir}/map_count/tetranscripts/{sample}/TEtranscripts_out.cntTable",
     conda:
         "../envs/tetranscripts.yaml"
     shadow:
         "shallow"
     log:
-        "{outdir}/map_count/{sample}/tetranscripts/TEtranscripts.err",
+        "{outdir}/map_count/tetranscripts/{sample}/TEtranscripts.err",
     params:
         strandedness=get_strandedness,
         mode="multi",
@@ -36,9 +36,9 @@ rule tetranscripts_quant:
         txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
         rmsk_gtf=expand(rules.get_ref.output, file="rmsk.gtf", allow_missing=True),
     output:
-        "{outdir}/map_count/{sample}/tetranscripts/TEtranscripts_out.quant",
+        "{outdir}/map_count/tetranscripts/{sample}/TEtranscripts_out.quant",
     log:
-        "{outdir}/map_count/{sample}/tetranscripts/quant.err",
+        "{outdir}/map_count/tetranscripts/{sample}/quant.err",
     conda:
         "../envs/tetranscripts.yaml"
     script:

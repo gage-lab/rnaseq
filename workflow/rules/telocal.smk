@@ -5,11 +5,11 @@ rule telocal_count:
         txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
         rmsk_ind=expand(rules.get_ref.output, file="rmsk.locInd", allow_missing=True),
     output:
-        "{outdir}/map_count/{sample}/telocal/TElocal_out.cntTable",
+        "{outdir}/map_count/telocal/{sample}/TElocal_out.cntTable",
     conda:
         "../envs/telocal.yaml"
     log:
-        "{outdir}/map_count/{sample}/telocal/telocal.err",
+        "{outdir}/map_count/telocal/{sample}/telocal.err",
     params:
         strandedness=get_strandedness,
         mode="multi",
@@ -34,9 +34,9 @@ rule telocal_quant:
         txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
         rmsk_gtf=expand(rules.get_ref.output, file="rmsk.gtf", allow_missing=True),
     output:
-        "{outdir}/map_count/{sample}/telocal/TElocal_out.quant",
+        "{outdir}/map_count/telocal/{sample}/TElocal_out.quant",
     log:
-        "{outdir}/map_count/{sample}/telocal/quant.err",
+        "{outdir}/map_count/telocal/{sample}/quant.err",
     conda:
         "../envs/telocal.yaml"
     script:

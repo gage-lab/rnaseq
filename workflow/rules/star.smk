@@ -36,13 +36,13 @@ rule star_align:
         idx=rules.star_index.output,
         gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
     output:
-        genome_bam="{outdir}/map_count/{sample}/star/Aligned.out.bam",
-        txome_bam="{outdir}/map_count/{sample}/star/Aligned.toTranscriptome.out.bam",
-        log="{outdir}/map_count/{sample}/star/Log.out",
-        log_final="{outdir}/map_count/{sample}/star/Log.final.out",
+        genome_bam="{outdir}/map_count/star/{sample}/Aligned.out.bam",
+        txome_bam="{outdir}/map_count/star/{sample}/Aligned.toTranscriptome.out.bam",
+        log="{outdir}/map_count/star/{sample}/Log.out",
+        log_final="{outdir}/map_count/star/{sample}/Log.final.out",
     threads: 8
     log:
-        "{outdir}/map_count/{sample}/star/Log.err",
+        "{outdir}/map_count/star/{sample}/Log.err",
     params:
         # these parameters are optimized to retain multimapping reads
         # TODO: add description of each parameter
@@ -58,9 +58,9 @@ rule samtools_sort:
     input:
         rules.star_align.output.genome_bam,
     output:
-        "{outdir}/map_count/{sample}/star/Aligned.out.sorted.bam",
+        rules.star_align.output.genome_bam.replace("bam", "sorted.bam"),
     log:
-        "{outdir}/map_count/{sample}/star/samtools_sort.log",
+        rules.star_align.log[0].replace("Log.err", "sort.log"),
     wrapper:
         "v1.20.0/bio/samtools/sort"
 
@@ -69,8 +69,8 @@ rule samtools_index:
     input:
         rules.samtools_sort.output,
     output:
-        "{outdir}/map_count/{sample}/star/Aligned.out.sorted.bam.bai",
+        rules.samtools_sort.output[0] + ".bai",
     log:
-        "{outdir}/map_count/{sample}/star/samtools_index.log",
+        rules.samtools_sort.log[0].replace("sort", "index"),
     wrapper:
         "v1.20.0/bio/samtools/index"
