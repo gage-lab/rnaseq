@@ -90,13 +90,10 @@ rule volcano_MA:
     input:
         rules.results.output,
     output:
-        MA_plot="{outdir}/de/{contrast}/{de}_MA.svg",
-        volcano_plot="{outdir}/de/{contrast}/logs/{de}_volcano.svg",
+        "{outdir}/de/{contrast}/{de}_volcano_MA.pdf",
     log:
         "{outdir}/de/{contrast}/logs/{de}_volcano_MA.log",
     params:
-        LFCcutoff=config["de"]["cutoffs"]["log2FoldChange"],
-        FDRcutoff=config["de"]["cutoffs"]["FDR"],
         max_overlaps=15,
         label=lambda wc: "gene_name"
         if wc.de == "dge" or "dge_te_subfamily" or "dge_te_locus"
@@ -125,7 +122,7 @@ rule gsea:
         dge=expand(rules.results.output, de="dge", allow_missing=True),
         gs_df=rules.make_gs_df.output,
     output:
-        results="{outdir}/de/{contrast}/{gs}_gsea.tsv",
+        "{outdir}/de/{contrast}/{gs}_gsea.tsv",
     log:
         "{outdir}/de/{contrast}/logs/{gs}_gsea.log",
     conda:
@@ -136,15 +133,12 @@ rule gsea:
 
 rule ora:
     input:
-        dge=expand(rules.results.output, de="dge", allow_missing=True),
+        expand(rules.results.output, de="dge", allow_missing=True),
     output:
-        resultsUP="{outdir}/de/{contrast}/up_ora.tsv",
-        resultsDOWN="{outdir}/de/{contrast}/down_ora.tsv",
+        up="{outdir}/de/{contrast}/up_ora.tsv",
+        down="{outdir}/de/{contrast}/down_ora.tsv",
     log:
         "{outdir}/de/{contrast}/logs/ora.log",
-    params:
-        LFCcutoff=config["de"]["cutoffs"]["log2FoldChange"],
-        FDRcutoff=config["de"]["cutoffs"]["FDR"],
     conda:
         "../envs/de.yaml"
     script:

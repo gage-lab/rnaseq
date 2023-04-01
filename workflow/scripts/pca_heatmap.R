@@ -2,6 +2,9 @@
 # Author: Mike Cuoco
 # Created on: Dec 6, 2022
 
+con <- file(snakemake@log[[1]], "w")
+sink(file = con, type = "message")
+
 suppressPackageStartupMessages({
   library(tidyverse)
   library(PCAtools)
@@ -11,8 +14,6 @@ suppressPackageStartupMessages({
 })
 
 # get inputs/outputs
-con <- file(snakemake@log[[1]], "w")
-sink(file = con, type = "message")
 dds <- readRDS(snakemake@input[[1]])
 form <- as.formula(snakemake@params$model)
 terms <- form %>%
@@ -20,12 +21,12 @@ terms <- form %>%
   labels()
 
 # variance stabilizing transformation
-print("Performing regularized log transformation")
+message("Performing regularized log transformation")
 vst <- DESeq2::rlog(dds, blind = TRUE)
 
 # PCA
 # TODO: add loadings plot/output
-print("Running PCA")
+message("Running PCA")
 p <- PCAtools::pca(assay(vst), metadata = colData(dds))
 
 # make plots

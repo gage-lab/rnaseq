@@ -3,28 +3,20 @@ rule telocal_count:
         bam=rules.samtools_sort.output,
         bai=rules.samtools_index.output,
         txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
-        rmsk_ind=expand(rules.get_ref.output, file="rmsk.locInd", allow_missing=True),
+        rmsk=expand(rules.get_ref.output, file="rmsk.locInd", allow_missing=True),
+        meta_info=rules.salmon_quant.output.meta_info,
     output:
-        "{outdir}/map_count/{sample}/telocal/TElocal_out.cntTable",
+        "{outdir}/map_count/telocal/{sample}/TElocal_out.cntTable",
     conda:
         "../envs/telocal.yaml"
+    shadow:
+        "shallow"
     log:
-        "{outdir}/map_count/{sample}/telocal/telocal.err",
+        "{outdir}/map_count/telocal/{sample}/TElocal.log",
     params:
-        strandedness=get_strandedness,
-        mode="multi",
-    shell:
-        """
-        touch {log} && exec >> {log} 2>&1
-        mkdir -p $(dirname {output})
-        TElocal \
-            -b {input.bam} \
-            --GTF {input.txome_gtf} --TE {input.rmsk_ind} \
-            --mode {params.mode} \
-            --project $(dirname {output})/$(basename {output} .cntTable) \
-            --stranded {params.strandedness} \
-            --sortByPos --verbose 3
-        """
+        mode="multi",  # can be multi or uniq
+    script:
+        "../scripts/te_count.py"
 
 
 # convert counts into TPM, make compatible with tximport
@@ -34,9 +26,9 @@ rule telocal_quant:
         txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
         rmsk_gtf=expand(rules.get_ref.output, file="rmsk.gtf", allow_missing=True),
     output:
-        "{outdir}/map_count/{sample}/telocal/TElocal_out.quant",
+        "{outdir}/map_count/telocal/{sample}/TElocal_out.quant",
     log:
-        "{outdir}/map_count/{sample}/telocal/quant.err",
+        "{outdir}/map_count/telocal/{sample}/quant.err",
     conda:
         "../envs/telocal.yaml"
     script:

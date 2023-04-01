@@ -14,54 +14,59 @@ suppressPackageStartupMessages({
 })
 options(readr.show_col_types = FALSE)
 
-res <- readr::read_csv(snakemake@input$dge)
+res <- readr::read_csv(snakemake@input[[1]])
 
-#' Run GO analysis
-#' @param res DESeq2 results
-#' @param up_or_down "UP" or "DOWN"
-#' @param results_fn filename for results
-myGO <- function(res, up_or_down, results_fn) {
-  # error checking
-  stopifnot(up_or_down %in% c("UP", "DOWN"))
+# for debugging
+# save.image(glue("{snakemake@wildcards[['contrast']]}_ora.RData"))
 
-  if (up_or_down == "UP") {
-    # UP-regulated
-    sig <- res %>%
-      dplyr::filter(log2FoldChange > snakemake@params[["LFCcutoff"]], padj < snakemake@params[["FDRcutoff"]]) %>%
-      dplyr::pull("gene_id") %>%
-      stringr::str_remove(".\\d+$")
-    sigFC <- res %>%
-      dplyr::filter(log2FoldChange > snakemake@params[["LFCcutoff"]], padj < snakemake@params[["FDRcutoff"]]) %>%
-      dplyr::pull("log2FoldChange")
-  } else {
-    # DOWN-regulated
-    sig <- res %>%
-      dplyr::filter(log2FoldChange < -snakemake@params[["LFCcutoff"]], padj < snakemake@params[["FDRcutoff"]]) %>%
-      dplyr::pull("gene_id") %>%
-      stringr::str_remove(".\\d+$")
-    sigFC <- res %>%
-      dplyr::filter(log2FoldChange < -snakemake@params[["LFCcutoff"]], padj < snakemake@params[["FDRcutoff"]]) %>%
-      dplyr::pull("log2FoldChange")
-  }
+# UP-regulated
+sig <- res %>%
+  dplyr::filter(log2FoldChange > snakemake@config$de$cutoffs$log2FoldChange, padj < snakemake@config$de$cutoffs$FDR) %>%
+  dplyr::pull("gene_id") %>%
+  stringr::str_remove(".\\d+$")
+sigFC <- res %>%
+  dplyr::filter(log2FoldChange > snakemake@config$de$cutoffs$log2FoldChange, padj < snakemake@config$de$cutoffs$FDR) %>%
+  dplyr::pull("log2FoldChange")
 
-  names(sigFC) <- sig
+names(sigFC) <- sig
 
-  # run GO enrichment
-  message(glue("Running GO enrichment for {length(sig)} {up_or_down}-regulated genes..."))
-  ego <- clusterProfiler::enrichGO(
-    gene = sig,
-    OrgDb = org.Hs.eg.db,
-    ont = "ALL",
-    universe = stringr::str_remove(res$gene_id, ".\\d+$"),
-    readable = TRUE,
-    keyType = "ENSEMBL",
-    pvalueCutoff = 1,
-    qvalueCutoff = 1,
-  )
+# run GO enrichment
+message(glue("Running GO enrichment for {length(sig)} DOWN-regulated genes..."))
+ego <- clusterProfiler::enrichGO(
+  gene = sig,
+  OrgDb = org.Hs.eg.db,
+  ont = "ALL",
+  universe = stringr::str_remove(res$gene_id, ".\\d+$"),
+  readable = TRUE,
+  keyType = "ENSEMBL",
+  pvalueCutoff = 1,
+  qvalueCutoff = 1,
+)
 
-  # save results
-  as.data.frame(ego) %>% readr::write_tsv(results_fn)
-}
+# save results
+as.data.frame(ego) %>% readr::write_tsv(snakemake@output$up)
 
-myGO(res, up_or_down = "UP", results_fn = snakemake@output$"resultsUP")
-myGO(res, up_or_down = "DOWN", results_fn = snakemake@output$"resultsDOWN")
+# DOWN-regulated
+sig <- res %>%
+  dplyr::filter(log2FoldChange < -snakemake@config$de$cutoffs$log2FoldChange, padj < snakemake@config$de$cutoffs$FDR) %>%
+  dplyr::pull("gene_id") %>%
+  stringr::str_remove(".\\d+$")
+sigFC <- res %>%
+  dplyr::filter(log2FoldChange < -snakemake@config$de$cutoffs$log2FoldChange, padj < snakemake@config$de$cutoffs$FDR) %>%
+  dplyr::pull("log2FoldChange")
+
+# run GO enrichment
+message(glue("Running GO enrichment for {length(sig)} UP-regulated genes..."))
+ego <- clusterProfiler::enrichGO(
+  gene = sig,
+  OrgDb = org.Hs.eg.db,
+  ont = "ALL",
+  universe = stringr::str_remove(res$gene_id, ".\\d+$"),
+  readable = TRUE,
+  keyType = "ENSEMBL",
+  pvalueCutoff = 1,
+  qvalueCutoff = 1,
+)
+
+# save results
+as.data.frame(ego) %>% readr::write_tsv(snakemake@output$down)

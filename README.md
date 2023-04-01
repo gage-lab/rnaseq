@@ -11,18 +11,14 @@ Analysis pipeline for single-end or paired-end Illumina RNA-seq experiments
 2. Generating STAR index
 3. Read alignment with STAR to genome and transcriptome, flexible to single-end or paired-end reads
 4. Quantification of gene and transcript abundances with Salmnon
-5. Quantification of TE subfamily abundances with TEtranscripts
-6. Differential gene and TE expression analysis with DESeq2 (`dge`, and `dge_te`)
+5. Quantification of TE subfamily abundances with TEtranscripts and TE locus abundances with TEcount
+6. Differential gene and TE expression analysis with DESeq2 (`dge`, `dge_te_subfamily`, `dge_te_locus`)
 7. Differential transcript expression and usage analysis with Swish (`dte` and `dtu`)
 8. PCA and heatmap of gene and TE expression
-9. Volcano and MA plotting of all 4 differential analyses
-10. Functional enrichment analysis using Gene set enrichment analysis (GSEA) and Overrepresentation analysis (ORA, aka GO analysis)
+9. Volcano and MA plotting for each differential analysis
+10. Functional enrichment analysis on differential gene expression analysis using Gene set enrichment analysis (GSEA) and Overrepresentation analysis (ORA, aka GO analysis)
 
 ## TODO
 
-- [ ] fix TElocal testing (running out of memory)
-- [ ] Put volcano and MA plots into one pdf per contrast per diff analysis
-- [ ] Fix QC to show each run for STAR and Salmon
-- [ ] get strandedness from salmon output instead of samples.tsv
 - [ ] add usage and contribution docs
-- [ ] Change print statements to message statements in R scripts (they get printed to the log file)
+- [ ] add hyperlinks to each tool used in the pipeline

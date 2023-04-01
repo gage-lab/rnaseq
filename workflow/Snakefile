@@ -60,19 +60,6 @@ def is_paired_end(sample):
     return all_paired
 
 
-# TODO: get strandedness from salmon output instead of samples.tsv
-def get_strandedness(wildcards):
-    s = samples.loc[wildcards.sample]["strandedness"]
-    if pd.isnull(s) or s == "unstranded":
-        return "no"
-    elif s == "forward":
-        return "forward"
-    elif s == "reverse":
-        return "reverse"
-    else:
-        raise ValueError("Invalid strandedness value")
-
-
 ##### source snakemake rule files #####
 include: "rules/ref.smk"
 include: "rules/trim_galore.smk"

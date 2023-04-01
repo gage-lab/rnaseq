@@ -43,16 +43,16 @@ if (snakemake@wildcards$quant_level == "subfamily") {
 coldata <- readr::read_tsv(snakemake@input$samplesheet)
 
 files <- snakemake@input$quant
-names(files) <- basename(dirname(dirname(files)))
+names(files) <- basename(dirname(files))
 
 coldata$files <- files[match(coldata$sample_name, names(files))]
 coldata$names <- coldata$sample_name
-coldata <- dplyr::select(coldata, -starts_with("fq"), -sample_name, -strandedness)
+coldata <- dplyr::select(coldata, -starts_with("fq"), -sample_name)
 
 # remove low-quality samples
 if (length(snakemake@config[["samples_exclude"]]) > 0) {
   stopifnot(all(snakemake@config[["samples_exclude"]] %in% coldata$names))
-  print(paste0("Removing samples: ", paste(snakemake@config[["samples_exclude"]], collapse = ", ")))
+  message(paste0("Removing samples: ", paste(snakemake@config[["samples_exclude"]], collapse = ", ")))
   coldata <- dplyr::filter(coldata, !names %in% snakemake@config[["samples_exclude"]])
 }
 
@@ -63,7 +63,7 @@ gene_gtf <- rtracklayer::readGFF(snakemake@input[["txome_gtf"]]) %>%
   tibble::column_to_rownames("gene_id")
 
 # DESeq
-print("Reading TE quantifications for DESeq")
+message("Reading TE quantifications for DESeq")
 se <- tximeta::tximeta(
   coldata,
   type = "none",
@@ -95,6 +95,6 @@ rowData(se)$gene_name[is.na(rowData(se)$gene_name)] <- rownames(rowData(se))[is.
 # Fit DESeq model
 form <- as.formula(snakemake@params$model)
 dds <- DESeq2::DESeqDataSet(se, form)
-print("Fitting DESeq model for differential gene expression (DGE) with transposable elements (TEs)")
+message("Fitting DESeq model for differential gene expression (DGE) with transposable elements (TEs)")
 dds <- DESeq2::DESeq(dds) # Fit DESeq model
 saveRDS(dds, file = snakemake@output[[1]]) # save

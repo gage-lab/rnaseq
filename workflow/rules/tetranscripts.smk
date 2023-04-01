@@ -3,30 +3,20 @@ rule tetranscripts_count:
         bam=rules.samtools_sort.output,
         bai=rules.samtools_index.output,
         txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
-        rmsk_gtf=expand(rules.get_ref.output, file="rmsk.gtf", allow_missing=True),
+        rmsk=expand(rules.get_ref.output, file="rmsk.gtf", allow_missing=True),
+        meta_info=rules.salmon_quant.output.meta_info,
     output:
-        "{outdir}/map_count/{sample}/tetranscripts/TEtranscripts_out.cntTable",
+        "{outdir}/map_count/tetranscripts/{sample}/TEtranscripts_out.cntTable",
     conda:
         "../envs/tetranscripts.yaml"
     shadow:
         "shallow"
     log:
-        "{outdir}/map_count/{sample}/tetranscripts/TEtranscripts.err",
+        "{outdir}/map_count/tetranscripts/{sample}/TEtranscripts.log",
     params:
-        strandedness=get_strandedness,
-        mode="multi",
-    shell:
-        """
-        touch {log} && exec >> {log} 2>&1
-        mkdir -p $(dirname {output})
-        TEcount \
-            -b {input.bam} \
-            --GTF {input.txome_gtf} --TE {input.rmsk_gtf} \
-            --mode {params.mode} \
-            --stranded {params.strandedness} \
-            --sortByPos --verbose 3 \
-            --outdir $(dirname {output})
-        """
+        mode="multi",  # can be multi or uniq
+    script:
+        "../scripts/te_count.py"
 
 
 # convert counts into TPM, make compatible with tximport
@@ -36,9 +26,9 @@ rule tetranscripts_quant:
         txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
         rmsk_gtf=expand(rules.get_ref.output, file="rmsk.gtf", allow_missing=True),
     output:
-        "{outdir}/map_count/{sample}/tetranscripts/TEtranscripts_out.quant",
+        "{outdir}/map_count/tetranscripts/{sample}/TEtranscripts_out.quant",
     log:
-        "{outdir}/map_count/{sample}/tetranscripts/quant.err",
+        "{outdir}/map_count/tetranscripts/{sample}/quant.err",
     conda:
         "../envs/tetranscripts.yaml"
     script:
