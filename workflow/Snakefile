@@ -30,20 +30,11 @@ validate(samples, "schemas/samples.schema.yaml")
 os.system("mkdir -p {}".format(config["outdir"]))
 
 # copy config, samplesheet to output directory
-# TODO: don't write if in dryrun mode
 if not os.path.exists(config["outdir"]):
     os.makedirs(config["outdir"])
 
 shutil.copy("config/config.yaml", config["outdir"])
 shutil.copy(config["samples"], config["outdir"])
-
-# write date, repo, and commit hash to file in output directory
-remote = os.popen("git remote get-url origin").read()
-commit = os.popen("git rev-parse HEAD").read()
-date = os.popen("date").read()
-
-with open(os.path.join(config["outdir"], "pipeline_info.txt"), "w") as f:
-    f.write(f"Started pipeline on {date}\nUsed {remote} On commit {commit}\n")
 
 
 def is_paired_end(sample):
