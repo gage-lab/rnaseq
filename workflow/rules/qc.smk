@@ -53,6 +53,66 @@ rule rseqc_gtf2bed:
         "../scripts/gtf2bed.py"
 
 
+rule rseqc_readdist:
+    input:
+        bam=rules.samtools_sort.output,
+        bed=rules.rseqc_gtf2bed.output.bed,
+    output:
+        "{outdir}/rseqc/{sample}.read_distribution.txt",
+    log:
+        "{outdir}/rseqc/{sample}.read_distribution.log",
+    conda:
+        "../envs/rseqc.yaml"
+    shell:
+        "read_distribution.py -r {input.bed} -i {input.bam} > {output} 2> {log}"
+
+
+rule rseqc_innerdis:
+    input:
+        bam=rules.samtools_sort.output,
+        bed=rules.rseqc_gtf2bed.output.bed,
+    output:
+        "{outdir}/rseqc/{sample}.inner_distance_freq.inner_distance.txt",
+    log:
+        "{outdir}/rseqc/{sample}.inner_distance.log",
+    params:
+        prefix=lambda w, output: output[0].replace(".inner_distance.txt", ""),
+    conda:
+        "../envs/rseqc.yaml"
+    shell:
+        "inner_distance.py -r {input.bed} -i {input.bam} -o {params.prefix} > {log} 2>&1"
+
+
+rule rseqc_readgc:
+    input:
+        rules.samtools_sort.output,
+    output:
+        "{outdir}/rseqc/{sample}.GC_plot.pdf",
+    log:
+        "{outdir}/rseqc/{sample}.readgc.log",
+    params:
+        prefix=lambda w, output: output[0].replace(".GC_plot.pdf", ""),
+    conda:
+        "../envs/rseqc.yaml"
+    shell:
+        "read_GC.py -i {input} -o {params.prefix} > {log} 2>&1"
+
+
+rule rseqc_readdup:
+    input:
+        rules.samtools_sort.output,
+    output:
+        "{outdir}/rseqc/{sample}.DupRate_plot.pdf",
+    log:
+        "{outdir}/rseqc/{sample}.readdup.log",
+    params:
+        prefix=lambda w, output: output[0].replace(".DupRate_plot.pdf", ""),
+    conda:
+        "../envs/rseqc.yaml"
+    shell:
+        "read_duplication.py -i {input} -o {params.prefix} > {log} 2>&1"
+
+
 rule rseqc_junction_annotation:
     input:
         bam=rules.samtools_sort.output,
@@ -76,7 +136,7 @@ rule rseqc_junction_saturation:
         bam=rules.samtools_sort.output,
         bed=rules.rseqc_gtf2bed.output.bed,
     output:
-        "{outdir}/rseqc/{sample}.junctionsat.junctionSaturation_plot.pdf",
+        "{outdir}/rseqc/{sample}.junctionSaturation_plot.pdf",
     log:
         "{outdir}/rseqc/{sample}.junction_saturation.log",
     params:
@@ -87,19 +147,6 @@ rule rseqc_junction_saturation:
     shell:
         "junction_saturation.py {params.extra} -i {input.bam} -r {input.bed} -o {params.prefix} "
         "> {log} 2>&1"
-
-
-rule rseqc_stat:
-    input:
-        rules.samtools_sort.output,
-    output:
-        "{outdir}/rseqc/{sample}.stats.txt",
-    log:
-        "{outdir}/rseqc/{sample}.stats.log",
-    conda:
-        "../envs/rseqc.yaml"
-    shell:
-        "bam_stat.py -i {input} > {output} 2> {log}"
 
 
 rule rseqc_infer:
@@ -116,64 +163,17 @@ rule rseqc_infer:
         "infer_experiment.py -r {input.bed} -i {input.bam} > {output} 2> {log}"
 
 
-rule rseqc_innerdis:
-    input:
-        bam=rules.samtools_sort.output,
-        bed=rules.rseqc_gtf2bed.output.bed,
-    output:
-        "{outdir}/rseqc/{sample}.inner_distance_freq.inner_distance.txt",
-    log:
-        "{outdir}/rseqc/{sample}.inner_distance.log",
-    params:
-        prefix=lambda w, output: output[0].replace(".inner_distance.txt", ""),
-    conda:
-        "../envs/rseqc.yaml"
-    shell:
-        "inner_distance.py -r {input.bed} -i {input.bam} -o {params.prefix} > {log} 2>&1"
-
-
-rule rseqc_readdist:
-    input:
-        bam=rules.samtools_sort.output,
-        bed=rules.rseqc_gtf2bed.output.bed,
-    output:
-        "{outdir}/rseqc/{sample}.read_distribution.txt",
-    log:
-        "{outdir}/rseqc/{sample}.read_distribution.log",
-    conda:
-        "../envs/rseqc.yaml"
-    shell:
-        "read_distribution.py -r {input.bed} -i {input.bam} > {output} 2> {log}"
-
-
-rule rseqc_readdup:
+rule rseqc_stat:
     input:
         rules.samtools_sort.output,
     output:
-        "{outdir}/rseqc/{sample}.readdup.DupRate_plot.pdf",
+        "{outdir}/rseqc/{sample}.stats.txt",
     log:
-        "{outdir}/rseqc/{sample}.readdup.log",
-    params:
-        prefix=lambda w, output: output[0].replace(".DupRate_plot.pdf", ""),
+        "{outdir}/rseqc/{sample}.stats.log",
     conda:
         "../envs/rseqc.yaml"
     shell:
-        "read_duplication.py -i {input} -o {params.prefix} > {log} 2>&1"
-
-
-rule rseqc_readgc:
-    input:
-        rules.samtools_sort.output,
-    output:
-        "{outdir}/rseqc/{sample}.readgc.GC_plot.pdf",
-    log:
-        "{outdir}/rseqc/{sample}.readgc.log",
-    params:
-        prefix=lambda w, output: output[0].replace(".GC_plot.pdf", ""),
-    conda:
-        "../envs/rseqc.yaml"
-    shell:
-        "read_GC.py -i {input} -o {params.prefix} > {log} 2>&1"
+        "bam_stat.py -i {input} > {output} 2> {log}"
 
 
 def get_fastqc_for_multiqc(wildcards):
