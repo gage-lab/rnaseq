@@ -62,20 +62,20 @@ include: "rules/qc.smk"
 include: "rules/de.smk"
 
 
-def get_results(wildcards):
-    return [
-        *expand(
+rule all:
+    input:
+        expand(
             rules.pca_heatmap.output,
             de=["dge", "dge_te_subfamily", "dge_te_locus"],
             outdir=config["outdir"],
         ),
-        *expand(
+        expand(
             rules.volcano_MA.output,
             de=["dge", "dte", "dtu", "dge_te_subfamily", "dge_te_locus"],
             contrast=config["de"]["contrasts"].keys(),
             outdir=config["outdir"],
         ),
-        *expand(
+        expand(
             rules.gsea.output,
             gs=[
                 "hallmark",
@@ -85,18 +85,12 @@ def get_results(wildcards):
             contrast=config["de"]["contrasts"].keys(),
             outdir=config["outdir"],
         ),
-        *expand(
+        expand(
             rules.ora.output,
             contrast=config["de"]["contrasts"].keys(),
             outdir=config["outdir"],
         ),
-        *expand(
+        expand(
             rules.multiqc.output,
             outdir=config["outdir"],
         ),
-    ]
-
-
-rule all:
-    input:
-        get_results,
