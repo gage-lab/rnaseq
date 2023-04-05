@@ -44,7 +44,7 @@ rule star_align:
     log:
         "{outdir}/map_count/star/{sample}/Log.err",
     params:
-        # these parameters are optimized to retain multimapping reads
+        # allowing for a maximum of 100 multi mapping loci and 200 anchors (used by Hammell Lab)
         # TODO: add description of each parameter
         extra=f"""--outSAMmultNmax -1 --outFilterMultimapNmax 100 --winAnchorMultimapNmax 200 --outMultimapperOrder Random --runRNGseed 777 --outSAMtype BAM Unsorted --sjdbScore 1""",
     conda:
