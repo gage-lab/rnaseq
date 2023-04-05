@@ -46,7 +46,7 @@ rule rseqc_gtf2bed:
         bed="{outdir}/resources/txome.bed",
         db=temp("{outdir}/resources/txome.db"),
     log:
-        "{outdir}/logs/rseqc_gtf2bed.log",
+        "{outdir}/resources/rseqc_gtf2bed.log",
     conda:
         "../envs/gffutils.yaml"
     script:
