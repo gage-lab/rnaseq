@@ -20,5 +20,7 @@ Analysis pipeline for single-end or paired-end Illumina RNA-seq experiments
 
 ## TODO
 
+- [ ] add config parameters to specify unique or multi for TEtranscripts and TElocal
 - [ ] add usage and contribution docs
+- [ ] add rnaseqc
 - [ ] add hyperlinks to each tool used in the pipeline
