@@ -5,8 +5,8 @@
 def get_filterTSO_pe_input(wildcards):
     if config["trimming"]["activate"]:
         return {
-            "fq1": f"{wildcards.outdir}/trimmed/{wildcards.sample}_val_1.fq.gz",
-            "fq2": f"{wildcards.outdir}/trimmed/{wildcards.sample}_val_2.fq.gz",
+            "fq1": rules.trim_galore_pe.output[0],
+            "fq2": rules.trim_galore_pe.output[1],
         }
     else:
         s = samples.loc[(wildcards.sample), ["fq1", "fq2"]].dropna()
@@ -32,7 +32,7 @@ rule filterTSO_pe:
 
 def get_filterTSO_se_input(wildcards):
     if config["trimming"]["activate"]:
-        return {"fq1": f"{wildcards.outdir}/trimmed/{wildcards.sample}_trimmed.fq.gz"}
+        return {"fq1": rules.trim_galore_se.output}
     else:
         s = samples.loc[(wildcards.sample), ["fq1"]].dropna()
         return {"fq1": f"{s.fq1}"}

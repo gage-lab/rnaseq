@@ -83,13 +83,8 @@ rule samtools_index:
 
 
 def get_te_bams(wildcards):
-    if config["filterTSOforTE"]["activate"]:
-        return {
-            "bam": f"{wildcards.outdir}/map_count/star/{wildcards.sample}/tso_filter/Aligned.out.sorted.bam",
-            "bai": f"{wildcards.outdir}/map_count/star/{wildcards.sample}/tso_filter/Aligned.out.sorted.bam.bai",
-        }
-    else:
-        return {
-            "bam": f"{wildcards.outdir}/map_count/star/{wildcards.sample}/no_filter/Aligned.out.sorted.bam",
-            "bai": f"{wildcards.outdir}/map_count/star/{wildcards.sample}/no_filter/Aligned.out.sorted.bam.bai",
-        }
+    f = "tso_filter" if config["filterTSOforTE"]["activate"] else "no_filter"
+    return {
+        "bam": expand(rules.samtools_sort.output, tso_filter=f, allow_missing=True),
+        "bai": expand(rules.samtools_index.output, tso_filter=f, allow_missing=True),
+    }

@@ -3,10 +3,10 @@ def get_fastqc_input(wildcards):
     if not is_paired_end(wildcards.sample):
         if "TSOfilter" in wildcards.suffix:
             # single end tso-filtered sample
-            return f"{wildcards.outdir}/tso_filtered/{wildcards.sample}_filtered.fq.gz"
+            return rules.filterTSO_se.output.fastq
         elif "trimmed" in wildcards.suffix:
             # single end trimmed sample
-            return f"{wildcards.outdir}/trimmed/{wildcards.sample}_trimmed.fq.gz"
+            return rules.trim_galore_se.output
         else:
             # single end local sample
             return samples.loc[wildcards.sample]["fq1"]
@@ -15,14 +15,14 @@ def get_fastqc_input(wildcards):
         # paired end trimmed sample
         if "TSOfilter" in wildcards.suffix:
             if "1" in wildcards.suffix:
-                return f"{wildcards.outdir}/tso_filtered/{wildcards.sample}_1.fq.gz"
+                return rules.filterTSO_pe.output.fastq1
             elif "2" in wildcards.suffix:
-                return f"{wildcards.outdir}/tso_filtered/{wildcards.sample}_2.fq.gz"
+                return rules.filterTSO_pe.output.fastq2
         elif "trimmed" in wildcards.suffix:
             if "1" in wildcards.suffix:
-                return f"{wildcards.outdir}/trimmed/{wildcards.sample}_val_1.fq.gz"
+                return rules.trim_galore_pe.output[0]
             elif "2" in wildcards.suffix:
-                return f"{wildcards.outdir}/trimmed/{wildcards.sample}_val_2.fq.gz"
+                return rules.trim_galore_pe.output[1]
         # paired end local sample
         else:
             if wildcards.suffix == "1":
