@@ -82,6 +82,7 @@ rule samtools_index:
         "v1.20.0/bio/samtools/index"
 
 
+# call this function for inputs to TElocal and TEtranscripts
 def get_te_bams(wildcards):
     f = "tso_filter" if config["filterTSOforTE"]["activate"] else "no_filter"
     return {
