@@ -1,7 +1,10 @@
 def get_fastqc_input(wildcards):
     # SINGLE END
     if not is_paired_end(wildcards.sample):
-        if "trimmed" in wildcards.suffix:
+        if "TSOfilter" in wildcards.suffix:
+            # single end tso-filtered sample
+            return f"{wildcards.outdir}/tso_filtered/{wildcards.sample}_filtered.fq.gz"
+        elif "trimmed" in wildcards.suffix:
             # single end trimmed sample
             return f"{wildcards.outdir}/trimmed/{wildcards.sample}_trimmed.fq.gz"
         else:
@@ -10,10 +13,14 @@ def get_fastqc_input(wildcards):
     # PAIRED ENDS
     else:
         # paired end trimmed sample
-        if "val" in wildcards.suffix:
+        if "TSOfilter" in wildcards.suffix:
+            if "1" in wildcards.suffix:
+                return f"{wildcards.outdir}/tso_filtered/{wildcards.sample}_1.fq.gz"
+            elif "2" in wildcards.suffix:
+                return f"{wildcards.outdir}/tso_filtered/{wildcards.sample}_2.fq.gz"
+        elif "trimmed" in wildcards.suffix:
             if "1" in wildcards.suffix:
                 return f"{wildcards.outdir}/trimmed/{wildcards.sample}_val_1.fq.gz"
-
             elif "2" in wildcards.suffix:
                 return f"{wildcards.outdir}/trimmed/{wildcards.sample}_val_2.fq.gz"
         # paired end local sample
@@ -28,12 +35,12 @@ rule fastqc:
     input:
         get_fastqc_input,
     output:
-        html="{outdir}/fastqc/{sample}__{suffix}_fastqc.html",
-        zip="{outdir}/fastqc/{sample}__{suffix}_fastqc.zip",
+        html="{outdir}/qc/fastqc/{sample}_{suffix}_fastqc.html",
+        zip="{outdir}/qc/fastqc/{sample}_{suffix}_fastqc.zip",
     params:
         "--quiet",
     log:
-        "{outdir}/fastqc/{sample}__{suffix}.log",
+        "{outdir}/qc/fastqc/{sample}_{suffix}.log",
     threads: 1
     wrapper:
         "v1.19.0/bio/fastqc"
@@ -58,9 +65,9 @@ rule rseqc_readdist:
         bam=rules.samtools_sort.output,
         bed=rules.rseqc_gtf2bed.output.bed,
     output:
-        "{outdir}/rseqc/{sample}.read_distribution.txt",
+        "{outdir}/qc/{tso_filter}/{sample}.read_distribution.txt",
     log:
-        "{outdir}/rseqc/{sample}.read_distribution.log",
+        "{outdir}/qc/{tso_filter}/{sample}.read_distribution.log",
     conda:
         "../envs/rseqc.yaml"
     shell:
@@ -72,9 +79,9 @@ rule rseqc_innerdis:
         bam=rules.samtools_sort.output,
         bed=rules.rseqc_gtf2bed.output.bed,
     output:
-        "{outdir}/rseqc/{sample}.inner_distance_freq.inner_distance.txt",
+        "{outdir}/qc/{tso_filter}/{sample}.inner_distance_freq.inner_distance.txt",
     log:
-        "{outdir}/rseqc/{sample}.inner_distance.log",
+        "{outdir}/qc/{tso_filter}/{sample}.inner_distance.log",
     params:
         prefix=lambda w, output: output[0].replace(".inner_distance.txt", ""),
     conda:
@@ -87,9 +94,9 @@ rule rseqc_readgc:
     input:
         rules.samtools_sort.output,
     output:
-        "{outdir}/rseqc/{sample}.GC_plot.pdf",
+        "{outdir}/qc/{tso_filter}/{sample}.GC_plot.pdf",
     log:
-        "{outdir}/rseqc/{sample}.readgc.log",
+        "{outdir}/qc/{tso_filter}/{sample}.readgc.log",
     params:
         prefix=lambda w, output: output[0].replace(".GC_plot.pdf", ""),
     conda:
@@ -102,9 +109,9 @@ rule rseqc_readdup:
     input:
         rules.samtools_sort.output,
     output:
-        "{outdir}/rseqc/{sample}.DupRate_plot.pdf",
+        "{outdir}/qc/{tso_filter}/{sample}.DupRate_plot.pdf",
     log:
-        "{outdir}/rseqc/{sample}.readdup.log",
+        "{outdir}/qc/{tso_filter}/{sample}.readdup.log",
     params:
         prefix=lambda w, output: output[0].replace(".DupRate_plot.pdf", ""),
     conda:
@@ -118,9 +125,9 @@ rule rseqc_junction_annotation:
         bam=rules.samtools_sort.output,
         bed=rules.rseqc_gtf2bed.output.bed,
     output:
-        "{outdir}/rseqc/{sample}.junctionanno.junction.bed",
+        "{outdir}/qc/{tso_filter}/{sample}.junctionanno.junction.bed",
     log:
-        "{outdir}/rseqc/{sample}.junction_annotation.log",
+        "{outdir}/qc/{tso_filter}/{sample}.junction_annotation.log",
     params:
         extra=r"-q 255",  # STAR uses 255 as a score for unique mappers
         prefix=lambda w, output: output[0].replace(".junction.bed", ""),
@@ -136,9 +143,9 @@ rule rseqc_junction_saturation:
         bam=rules.samtools_sort.output,
         bed=rules.rseqc_gtf2bed.output.bed,
     output:
-        "{outdir}/rseqc/{sample}.junctionSaturation_plot.pdf",
+        "{outdir}/qc/{tso_filter}/{sample}.junctionSaturation_plot.pdf",
     log:
-        "{outdir}/rseqc/{sample}.junction_saturation.log",
+        "{outdir}/qc/{tso_filter}/{sample}.junction_saturation.log",
     params:
         extra=r"-q 255",
         prefix=lambda w, output: output[0].replace(".junctionSaturation_plot.pdf", ""),
@@ -154,9 +161,9 @@ rule rseqc_infer:
         bam=rules.samtools_sort.output,
         bed=rules.rseqc_gtf2bed.output.bed,
     output:
-        "{outdir}/rseqc/{sample}.infer_experiment.txt",
+        "{outdir}/qc/{tso_filter}/{sample}.infer_experiment.txt",
     log:
-        "{outdir}/rseqc/{sample}.infer_experiment.log",
+        "{outdir}/qc/{tso_filter}/{sample}.infer_experiment.log",
     conda:
         "../envs/rseqc.yaml"
     shell:
@@ -167,9 +174,9 @@ rule rseqc_stat:
     input:
         rules.samtools_sort.output,
     output:
-        "{outdir}/rseqc/{sample}.stats.txt",
+        "{outdir}/qc/{tso_filter}/{sample}.stats.txt",
     log:
-        "{outdir}/rseqc/{sample}.stats.log",
+        "{outdir}/qc/{tso_filter}/{sample}.stats.log",
     conda:
         "../envs/rseqc.yaml"
     shell:
@@ -178,96 +185,40 @@ rule rseqc_stat:
 
 def get_fastqc_for_multiqc(wildcards):
     result = []
-    # itr over samples, is it paired or single?, adjust suffix based off of trim name
-    for index, data in samples.iterrows():
-        if is_paired_end(data["sample_name"]):
-            result += expand(
-                rules.fastqc.output,
-                sample=data["sample_name"],
-                suffix=["1", "2"],
-                allow_missing=True,
-            )
+    for s in samples["sample_name"]:
+        if is_paired_end(s):
+            suffices = ["1", "2"]
             if config["trimming"]["activate"]:
-                result += expand(
-                    rules.fastqc.output,
-                    sample=data["sample_name"],
-                    suffix=["val_1", "val_2"],
-                    allow_missing=True,
-                )
+                suffices += ["trimmed1", "trimmed1"]
+            if wildcards.tso_filter == "tso_filter":
+                suffices += ["TSOfiltered1", "TSOfiltered2"]
         else:
-            result += expand(
-                rules.fastqc.output,
-                sample=data["sample_name"],
-                suffix=["1"],
-                allow_missing=True,
-            )
+            suffices = ["1"]
             if config["trimming"]["activate"]:
-                result += expand(
-                    rules.fastqc.output,
-                    sample=data["sample_name"],
-                    suffix=["trimmed"],
-                    allow_missing=True,
-                )
+                suffices += ["trimmed"]
+            if wildcards.tso_filter == "tso_filter":
+                suffices += ["TSOfiltered"]
+
+        result += expand(
+            rules.fastqc.output,
+            sample=s,
+            suffix=suffices,
+            allow_missing=True,
+        )
     return result
+
+
+# get_other_multiqc_files
 
 
 rule multiqc:
     input:
         get_fastqc_for_multiqc,
-        expand(
-            rules.rseqc_junction_annotation.output,
-            sample=samples["sample_name"],
-            allow_missing=True,
-        ),
-        expand(
-            rules.rseqc_junction_saturation.output,
-            sample=samples["sample_name"],
-            allow_missing=True,
-        ),
-        expand(
-            rules.rseqc_stat.output, sample=samples["sample_name"], allow_missing=True
-        ),
-        expand(
-            rules.rseqc_infer.output, sample=samples["sample_name"], allow_missing=True
-        ),
-        expand(
-            rules.rseqc_innerdis.output,
-            sample=samples["sample_name"],
-            allow_missing=True,
-        ),
-        expand(
-            rules.rseqc_readdist.output,
-            sample=samples["sample_name"],
-            allow_missing=True,
-        ),
-        expand(
-            rules.rseqc_readdup.output,
-            sample=samples["sample_name"],
-            allow_missing=True,
-        ),
-        expand(
-            rules.rseqc_readgc.output,
-            sample=samples["sample_name"],
-            allow_missing=True,
-        ),
-        expand(
-            rules.star_align.output, sample=samples["sample_name"], allow_missing=True
-        ),
-        expand(
-            rules.salmon_quant.output,
-            sample=samples["sample_name"],
-            allow_missing=True,
-        ),
-        expand(
-            rules.tetranscripts_count.output,
-            sample=samples["sample_name"],
-            allow_missing=True,
-        ),
     output:
-        "{outdir}/multiqc.html",
+        "{outdir}/multiqc_{tso_filter}.html",
     params:
         extra="",  # Optional: extra parameters for multiqc.
     log:
-        "{outdir}/multiqc.log",
+        "{outdir}/multiqc_{tso_filter}.log",
     wrapper:
         "v1.19.0/bio/multiqc"
