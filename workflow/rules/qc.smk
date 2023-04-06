@@ -208,12 +208,73 @@ def get_fastqc_for_multiqc(wildcards):
     return result
 
 
-# get_other_multiqc_files
+def get_quant_for_multiqc(wildcards):
+    result = []
+    if wildcards.tso_filter == "tso_filter" or not config["filterTSOforTE"]["activate"]:
+        result += expand(
+            rules.telocal_count.output,
+            sample=samples["sample_name"],
+            allow_missing=True,
+        )
+        result += expand(
+            ruless.tetranscripts_count.output,
+            sample=samples["sample_name"],
+            allow_missing=True,
+        )
+
+    if wildcards.tso_filter == "no_filter":
+        result += expand(
+            rules.salmon_quant.output,
+            sample=samples["sample_name"],
+            allow_missing=True,
+        )
+    return result
 
 
 rule multiqc:
     input:
         get_fastqc_for_multiqc,
+        get_quant_for_multiqc,
+        expand(
+            rules.rseqc_readdist.output,
+            sample=samples["sample_name"],
+            allow_missing=True,
+        ),
+        expand(
+            rules.rseqc_innerdis.output,
+            sample=samples["sample_name"],
+            allow_missing=True,
+        ),
+        expand(
+            rules.rseqc_readgc.output,
+            sample=samples["sample_name"],
+            allow_missing=True,
+        ),
+        expand(
+            rules.rseqc_readdup.output,
+            sample=samples["sample_name"],
+            allow_missing=True,
+        ),
+        expand(
+            rules.rseqc_junction_annotation.output,
+            sample=samples["sample_name"],
+            allow_missing=True,
+        ),
+        expand(
+            rules.rseqc_junction_saturation.output,
+            sample=samples["sample_name"],
+            allow_missing=True,
+        ),
+        expand(
+            rules.rseqc_infer.output,
+            sample=samples["sample_name"],
+            allow_missing=True,
+        ),
+        expand(
+            rules.rseqc_stat.output,
+            sample=samples["sample_name"],
+            allow_missing=True,
+        ),
     output:
         "{outdir}/multiqc_{tso_filter}.html",
     params:
