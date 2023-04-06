@@ -217,7 +217,7 @@ def get_quant_for_multiqc(wildcards):
             allow_missing=True,
         )
         result += expand(
-            ruless.tetranscripts_count.output,
+            rules.tetranscripts_count.output,
             sample=samples["sample_name"],
             allow_missing=True,
         )
