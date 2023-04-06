@@ -1,13 +1,19 @@
 def get_star_input(wildcards):
-    if config["trimming"]["activate"]:
+    if wildcards.tso_filter == "tso_filter":
         if not is_paired_end(wildcards.sample):
-            return {
-                "fq1": f"{wildcards.outdir}/trimmed/{wildcards.sample}_trimmed.fq.gz"
-            }
+            return {"fq1": rules.filterTSO_se.output.fastq}
         else:
             return {
-                "fq1": f"{wildcards.outdir}/trimmed/{wildcards.sample}_val_1.fq.gz",
-                "fq2": f"{wildcards.outdir}/trimmed/{wildcards.sample}_val_2.fq.gz",
+                "fq1": rules.filterTSO_pe.output.fastq1,
+                "fq2": rules.filterTSO_pe.output.fastq2,
+            }
+    elif config["trimming"]["activate"]:
+        if not is_paired_end(wildcards.sample):
+            return {"fq1": rules.trim_galore_se.output}
+        else:
+            return {
+                "fq1": rules.trim_galore_pe.output[0],
+                "fq2": rules.trim_galore_pe.output[1],
             }
     else:
         if not is_paired_end(wildcards.sample):
@@ -36,13 +42,13 @@ rule star_align:
         idx=rules.star_index.output,
         gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
     output:
-        genome_bam="{outdir}/map_count/star/{sample}/Aligned.out.bam",
-        txome_bam="{outdir}/map_count/star/{sample}/Aligned.toTranscriptome.out.bam",
-        log="{outdir}/map_count/star/{sample}/Log.out",
-        log_final="{outdir}/map_count/star/{sample}/Log.final.out",
+        genome_bam="{outdir}/map_count/star/{sample}/{tso_filter}/Aligned.out.bam",
+        txome_bam="{outdir}/map_count/star/{sample}/{tso_filter}/Aligned.toTranscriptome.out.bam",
+        log="{outdir}/map_count/star/{sample}/{tso_filter}/Log.out",
+        log_final="{outdir}/map_count/star/{sample}/{tso_filter}/Log.final.out",
     threads: 8
     log:
-        "{outdir}/map_count/star/{sample}/Log.err",
+        "{outdir}/map_count/star/{sample}/{tso_filter}/Log.err",
     params:
         # allowing for a maximum of 100 multi mapping loci and 200 anchors (used by Hammell Lab)
         # TODO: add description of each parameter
@@ -74,3 +80,16 @@ rule samtools_index:
         rules.samtools_sort.log[0].replace("sort", "index"),
     wrapper:
         "v1.20.0/bio/samtools/index"
+
+
+def get_te_bams(wildcards):
+    if config["filterTSOforTE"]["activate"]:
+        return {
+            "bam": f"{wildcards.outdir}/map_count/star/{wildcards.sample}/tso_filter/Aligned.out.sorted.bam",
+            "bai": f"{wildcards.outdir}/map_count/star/{wildcards.sample}/tso_filter/Aligned.out.sorted.bam.bai",
+        }
+    else:
+        return {
+            "bam": f"{wildcards.outdir}/map_count/star/{wildcards.sample}/no_filter/Aligned.out.sorted.bam",
+            "bai": f"{wildcards.outdir}/map_count/star/{wildcards.sample}/no_filter/Aligned.out.sorted.bam.bai",
+        }

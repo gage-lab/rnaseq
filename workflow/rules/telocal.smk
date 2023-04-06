@@ -1,7 +1,6 @@
 rule telocal_count:
     input:
-        bam=rules.samtools_sort.output,
-        bai=rules.samtools_index.output,
+        unpack(get_te_bams),
         txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
         rmsk=expand(rules.get_ref.output, file="rmsk.locInd", allow_missing=True),
         meta_info=rules.salmon_quant.output.meta_info,

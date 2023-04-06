@@ -63,6 +63,7 @@ def is_paired_end(sample):
 ##### source snakemake rule files #####
 include: "rules/ref.smk"
 include: "rules/trim_galore.smk"
+include: "rules/filtertso.smk"
 include: "rules/star.smk"
 include: "rules/salmon.smk"
 include: "rules/tetranscripts.smk"
@@ -101,6 +102,9 @@ def get_results(wildcards):
         ),
         *expand(
             rules.multiqc.output,
+            tso_filter=["tso_filter", "no_filter"]
+            if config["filterTSOforTE"]["activate"]
+            else ["no_filter"],
             outdir=config["outdir"],
         ),
     ]
