@@ -13,9 +13,9 @@ species: human # can be mouse or human
 trimming:
   activate: True
 
-filterTSOforTEquant:
-  activate: True
-  sequence: AAGCAGTGGTATCAACGCAGAGTACATGGG
+filterTSOforTE:
+  activate: False
+  TSO: AAGCAGTGGTATCAACGCAGAGTACATGGG
 
 salmon:
   numBootstraps: 20
