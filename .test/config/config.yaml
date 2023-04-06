@@ -13,6 +13,10 @@ species: human # can be mouse or human
 trimming:
   activate: True
 
+filterTSOforTE:
+  activate: False
+  TSO: AAGCAGTGGTATCAACGCAGAGTACATGGG
+
 salmon:
   numBootstraps: 20
   extra: --gencode

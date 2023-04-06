@@ -1,6 +1,10 @@
 rule salmon_quant:
     input:
-        bam=rules.star_align.output.txome_bam,
+        bam=expand(
+            rules.star_align.output.txome_bam,
+            tso_filter="no_filter",
+            allow_missing=True,
+        ),
         txome=expand(rules.get_ref.output, file="txome.fa", allow_missing=True),
         gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
     output:

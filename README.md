@@ -17,6 +17,7 @@ Analysis pipeline for single-end or paired-end Illumina RNA-seq experiments
 8. PCA and heatmap of gene and TE expression
 9. Volcano and MA plotting for each differential analysis
 10. Functional enrichment analysis on differential gene expression analysis using Gene set enrichment analysis (GSEA) and Overrepresentation analysis (ORA, aka GO analysis)
+11. Extensive QC with Fastqc, RNASeqC, and MultiQC
 
 ## TODO
 

@@ -39,9 +39,21 @@ properties:
       activate:
         type: boolean
 
+  filterTSOforTE:
+    type: object
+    properties:
+      activate:
+        type: boolean
+      TSO:
+        type: string
+    required:
+      - activate
+      - TSO
+
 required:
   - samples
   - outdir
   - species
   - ref
   - trimming
+  - filterTSOforTE
