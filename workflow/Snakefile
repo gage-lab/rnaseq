@@ -1,7 +1,6 @@
 # Main entrypoint of the workflow.
 
-from snakemake.utils import min_version
-from snakemake.utils import validate
+from snakemake.utils import min_version, validate
 from snakemake.remote import FTP, HTTP, AUTO
 import pandas as pd
 import os, shutil

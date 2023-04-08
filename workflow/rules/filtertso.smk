@@ -19,15 +19,26 @@ rule filterTSO_pe:
     output:
         fastq1="{outdir}/tso_filtered/{sample}_1.fq.gz",
         fastq2="{outdir}/tso_filtered/{sample}_2.fq.gz",
-        qc="{outdir}/tso_filtered/{sample}_qc.txt",
     params:
-        adapters="-g {} -G {}".format(
-            config["filterTSOforTE"]["TSO"], config["filterTSOforTE"]["TSO"]
-        ),
-        extra="--minimum-length 20 --overlap 10 --pair-filter=both --discard-untrimmed",
+        tso=config["filterTSOforTE"]["TSO"],
+    conda:
+        "../envs/cutadapt.yaml"
+    log:
+        "{outdir}/tso_filtered/{sample}.log",
     threads: 4
-    wrapper:
-        "v1.25.0/bio/cutadapt/pe"
+    shell:
+        """
+        tmp=$(mktemp -d)
+
+        # get read pairs with at least one TSO
+        cutadapt -j {threads} -g {params.tso} -G {params.tso} \
+            --overlap 10 --pair-filter=both --discard-untrimmed \
+            -o $tmp/1.fq.gz -p $tmp/2.fq.gz {input.fq1} {input.fq2} > {log}
+
+        # remove read pairs that are too short
+        cutadapt -j {threads} --minimum-length 20 --pair-filter=any \
+            -o {output.fastq1} -p {output.fastq2} $tmp/1.fq.gz $tmp/2.fq.gz >> {log}
+        """
 
 
 def get_filterTSO_se_input(wildcards):
@@ -45,8 +56,16 @@ rule filterTSO_se:
         fastq="{outdir}/tso_filtered/{sample}_filtered.fq.gz",
         qc="{outdir}/tso_filtered/{sample}_qc.txt",
     params:
-        adapters="-g {}".format(config["filterTSOforTE"]["TSO"]),
-        extra="--minimum-length 20 --overlap 10 --pair-filter=both --discard-untrimmed",
+        tso=config["filterTSOforTE"]["TSO"],
+    conda:
+        "../envs/cutadapt.yaml"
+    log:
+        "{outdir}/tso_filtered/{sample}.log",
     threads: 4
-    wrapper:
-        "v1.25.0/bio/cutadapt/se"
+    shell:
+        """
+        # get read pairs with at least one TSO
+        cutadapt -j {threads} -g {params.tso} --minimum-length 20 \
+            --overlap 10 --discard-untrimmed \
+            -o {output.fastq1} -p {output.fastq2} {input.fq1} {input.fq2} > {log}
+        """
