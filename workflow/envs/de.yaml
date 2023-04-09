@@ -19,6 +19,7 @@ dependencies:
   - bioconductor-org.hs.eg.db>=3.16.0
   - bioconductor-org.mm.eg.db
   - bioconductor-apeglm
+  - r-ashr
   - bioconductor-deseq2>=1.38.0
   - bioconductor-fishpond
   - bioconductor-complexheatmap

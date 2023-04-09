@@ -33,8 +33,9 @@ if (snakemake@wildcards[["de"]] %in% c("dge", "dge_te_subfamily", "dge_te_locus"
   res <- DESeq2::results(se, contrast = contrast, cooksCutoff = FALSE)
 
   # perform LFC shrinkage
+  # TODO: make LFC shrinkage an option and if so, the type
   message("Performing LFC shrinkage")
-  res <- DESeq2::lfcShrink(dds = se, coef = coef, type = "apeglm", res = res)
+  res <- DESeq2::lfcShrink(dds = se, coef = coef, type = "ashr", res = res) # use ashr until apeglm is fixed
 
   # add annotations
   df <- rowData(se) %>%
