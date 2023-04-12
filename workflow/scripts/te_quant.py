@@ -46,11 +46,15 @@ if __name__ == "__main__":
         dtype={"gene_id": str, "count": float},
     ).merge(joint, on="gene_id", how="left")
 
-    # compute TPM
-    counts["rpk"] = counts["count"] / counts["length"]
-    scale_factor = counts["rpk"].sum() / 1e6
-    counts["TPM"] = counts["rpk"] / scale_factor
-    counts.drop(["rpk"], axis=1, inplace=True)
+    # compute abundances
+    if snakemake.wildcards.tso_filter == "tso_filter":
+        scale_factor = counts["count"].sum() / 1e6
+        counts["RPM"] = counts["count"] / scale_factor
+    else:
+        counts["rpk"] = counts["count"] / counts["length"]
+        scale_factor = counts["rpk"].sum() / 1e6
+        counts["TPM"] = counts["rpk"] / scale_factor
+        counts.drop(["rpk"], axis=1, inplace=True)
 
     # write out
     counts.to_csv(snakemake.output[0], sep="\t", index=False)
