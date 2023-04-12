@@ -47,7 +47,8 @@ if __name__ == "__main__":
     ).merge(joint, on="gene_id", how="left")
 
     # compute abundances
-    if snakemake.wildcards.tso_filter == "tso_filter":
+    # if filtering for TSO, don't normalize by length
+    if snakemake.config["filterTSOforTE"]["activate"]:
         scale_factor = counts["count"].sum() / 1e6
         counts["RPM"] = counts["count"] / scale_factor
     else:
