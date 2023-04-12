@@ -50,7 +50,7 @@ if __name__ == "__main__":
     # if filtering for TSO, don't normalize by length
     if snakemake.config["filterTSOforTE"]["activate"]:
         scale_factor = counts["count"].sum() / 1e6
-        counts["RPM"] = counts["count"] / scale_factor
+        counts["TPM"] = counts["count"] / scale_factor
     else:
         counts["rpk"] = counts["count"] / counts["length"]
         scale_factor = counts["rpk"].sum() / 1e6
