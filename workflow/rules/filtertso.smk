@@ -30,9 +30,9 @@ rule filterTSO_pe:
         """
         tmp=$(mktemp -d)
 
-        # get read pairs with at least one TSO
+        # get read pairs where at least one mate has 10bp of the TSO
         cutadapt -j {threads} -g {params.tso} -G {params.tso} \
-            --overlap 10 --pair-filter=both --discard-untrimmed \
+            --pair-filter=both --discard-untrimmed \
             -o $tmp/1.fq.gz -p $tmp/2.fq.gz {input.fq1} {input.fq2} > {log}
 
         # remove read pairs that are too short
@@ -64,8 +64,8 @@ rule filterTSO_se:
     threads: 4
     shell:
         """
-        # get read pairs with at least one TSO
+        # get reads with TSO
         cutadapt -j {threads} -g {params.tso} --minimum-length 20 \
-            --overlap 10 --discard-untrimmed \
-            -o {output.fastq1} -p {output.fastq2} {input.fq1} {input.fq2} > {log}
+            --discard-untrimmed \
+            -o {output.fastq1} {input.fq1} > {log}
         """

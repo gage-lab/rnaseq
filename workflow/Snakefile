@@ -53,43 +53,30 @@ def is_paired_end(sample):
 ##### source snakemake rule files #####
 include: "rules/ref.smk"
 include: "rules/trim_galore.smk"
-include: "rules/filtertso.smk"
+
+
+if config["filterTSOforTE"]["activate"]:
+
+    include: "rules/filtertso.smk"
+
+
 include: "rules/star.smk"
+
+
 include: "rules/salmon.smk"
+
+
 include: "rules/tetranscripts.smk"
+
+
 include: "rules/telocal.smk"
+
+
 include: "rules/qc.smk"
-include: "rules/de.smk"
 
 
-rule all:
+rule map_count:
     input:
-        expand(
-            rules.pca_heatmap.output,
-            de=["dge", "dge_te_subfamily", "dge_te_locus"],
-            outdir=config["outdir"],
-        ),
-        expand(
-            rules.volcano_MA.output,
-            de=["dge", "dte", "dtu", "dge_te_subfamily", "dge_te_locus"],
-            contrast=config["de"]["contrasts"].keys(),
-            outdir=config["outdir"],
-        ),
-        expand(
-            rules.gsea.output,
-            gs=[
-                "hallmark",
-                "tft",
-                "go",
-            ],
-            contrast=config["de"]["contrasts"].keys(),
-            outdir=config["outdir"],
-        ),
-        expand(
-            rules.ora.output,
-            contrast=config["de"]["contrasts"].keys(),
-            outdir=config["outdir"],
-        ),
         expand(
             rules.multiqc.output,
             tso_filter=["tso_filter", "no_filter"]
@@ -97,3 +84,37 @@ rule all:
             else ["no_filter"],
             outdir=config["outdir"],
         ),
+
+
+if config["de"]["activate"]:
+
+    include: "rules/de.smk"
+
+    rule de:
+        input:
+            expand(
+                rules.pca_heatmap.output,
+                de=["dge", "dge_te_subfamily", "dge_te_locus"],
+                outdir=config["outdir"],
+            ),
+            expand(
+                rules.volcano_MA.output,
+                de=["dge", "dte", "dtu", "dge_te_subfamily", "dge_te_locus"],
+                contrast=config["de"]["contrasts"].keys(),
+                outdir=config["outdir"],
+            ),
+            expand(
+                rules.gsea.output,
+                gs=[
+                    "hallmark",
+                    "tft",
+                    "go",
+                ],
+                contrast=config["de"]["contrasts"].keys(),
+                outdir=config["outdir"],
+            ),
+            expand(
+                rules.ora.output,
+                contrast=config["de"]["contrasts"].keys(),
+                outdir=config["outdir"],
+            ),

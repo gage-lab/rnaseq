@@ -48,7 +48,39 @@ properties:
         type: string
     required:
       - activate
-      - TSO
+
+  salmon:
+    type: object
+    properties:
+      numBootstraps:
+        type: integer
+      extra:
+        type: string
+    required:
+      - numBootstraps
+      - extra
+
+  de:
+    type: object
+    properties:
+      activate:
+        type: boolean
+      contrasts:
+        type: object
+      model:
+        type: string
+      cutoffs:
+        type: object
+        properties:
+          log2FoldChange:
+            type: number
+          FDR:
+            type: number
+        required:
+          - log2FoldChange
+          - FDR
+    required:
+      - activate
 
 required:
   - samples
@@ -57,3 +89,5 @@ required:
   - ref
   - trimming
   - filterTSOforTE
+  - salmon
+  - de

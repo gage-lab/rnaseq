@@ -15,13 +15,13 @@ trimming:
 
 filterTSOforTE:
   activate: False
-  TSO: AAGCAGTGGTATCAACGCAGAGTACATGGG
 
 salmon:
   numBootstraps: 20
   extra: --gencode
 
 de:
+  activate: True
   # contrasts for the deseq2 results method
   contrasts:
     condition_Treatment_vs_Control:

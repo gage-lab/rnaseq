@@ -14,13 +14,14 @@ trimming:
 
 filterTSOforTE:
   activate: False
-  TSO: AAGCAGTGGTATCAACGCAGAGTACATGGG
+  TSO: AGAGTACATGGG
 
 salmon:
   numBootstraps: 30
   extra: --gcBias --posBias --seqBias --gencode
 
 de:
+  activate: False
   # contrasts for the deseq2 results method
   contrasts:
     celltype_npc_vs_neuron:
