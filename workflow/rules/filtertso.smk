@@ -43,18 +43,17 @@ rule filterTSO_pe:
 
 def get_filterTSO_se_input(wildcards):
     if config["trimming"]["activate"]:
-        return {"fq1": rules.trim_galore_se.output}
+        return rules.trim_galore_se.output
     else:
         s = samples.loc[(wildcards.sample), ["fq1"]].dropna()
-        return {"fq1": f"{s.fq1}"}
+        return s.fq1
 
 
 rule filterTSO_se:
     input:
-        unpack(get_filterTSO_se_input),
+        get_filterTSO_se_input,
     output:
         fastq="{outdir}/tso_filtered/{sample}_filtered.fq.gz",
-        qc="{outdir}/tso_filtered/{sample}_qc.txt",
     params:
         tso=config["filterTSOforTE"]["TSO"],
     conda:
@@ -67,5 +66,5 @@ rule filterTSO_se:
         # get reads with TSO
         cutadapt -j {threads} -g {params.tso} --minimum-length 20 \
             --discard-untrimmed \
-            -o {output.fastq1} {input.fq1} > {log}
+            -o {output.fastq} {input} > {log}
         """
