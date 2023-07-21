@@ -228,6 +228,11 @@ def get_quant_for_multiqc(wildcards):
             sample=samples["sample_name"],
             allow_missing=True,
         )
+        result += expand(
+            rules.l1em.output,
+            sample=samples["sample_name"],
+            allow_missing=True,
+        )
     return result
 
 
