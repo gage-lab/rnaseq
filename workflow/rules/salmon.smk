@@ -5,8 +5,8 @@ rule salmon_quant:
             tso_filter="no_filter",
             allow_missing=True,
         ),
-        txome=expand(rules.get_ref.output, file="txome.fa", allow_missing=True),
-        gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
+        txome=rules.filter_gtf.output.fa,
+        gtf=rules.filter_gtf.output.gtf,
     output:
         meta_info="{outdir}/map_count/salmon/{sample}/aux_info/meta_info.json",
         quant_tx="{outdir}/map_count/salmon/{sample}/quant.sf",

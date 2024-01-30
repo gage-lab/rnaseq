@@ -40,7 +40,7 @@ rule star_align:
     input:
         unpack(get_star_input),
         idx=rules.star_index.output,
-        gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
+        gtf=rules.filter_gtf.output.gtf,
     output:
         genome_bam="{outdir}/map_count/star/{sample}/{tso_filter}/Aligned.out.bam",
         txome_bam="{outdir}/map_count/star/{sample}/{tso_filter}/Aligned.toTranscriptome.out.bam",

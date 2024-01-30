@@ -6,7 +6,7 @@ rule deseq_swish:
             sample=samples["sample_name"],
             allow_missing=True,
         ),
-        txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
+        txome_gtf=rules.filter_gtf.output.gtf,
         samplesheet=config["samples"],
     output:
         dge="{outdir}/de/dge.rds",  # differential gene expression
@@ -40,7 +40,7 @@ def get_deseq_te_input(wildcards):
 rule deseq_te:
     input:
         quant=get_deseq_te_input,
-        txome_gtf=expand(rules.get_ref.output, file="txome.gtf", allow_missing=True),
+        txome_gtf=rules.filter_gtf.output.gtf,
         rmsk_gtf=expand(rules.get_ref.output, file="rmsk.gtf", allow_missing=True),
         samplesheet=config["samples"],
     output:
