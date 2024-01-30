@@ -28,6 +28,8 @@ de:
       - Treatment
       - Control
   model: ~condition
+  datatypes:
+    condition: categorical
   cutoffs:
     log2FoldChange: 0
     FDR: 1

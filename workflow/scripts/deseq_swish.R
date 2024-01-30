@@ -27,6 +27,19 @@ if (snakemake@config$species == "human") {
 
 # make coldata for tximeta
 coldata <- readr::read_tsv(snakemake@input$samplesheet)
+for (c in names(snakemake@config$de$datatypes)) {
+  type <- snakemake@config$de$datatypes[names(snakemake@config$de$datatypes) == c]
+  if (type == "categorical") {
+    message(paste0("Converting ", c, " to factor"))
+    coldata[[c]] <- factor(coldata[[c]])
+  } else if (type == "numeric") {
+    message(paste0("Converting ", c, " to numeric"))
+    coldata[[c]] <- as.numeric(coldata[[c]])
+  } else {
+    stop("Unknown datatype: ", type)
+  }
+}
+
 
 files <- snakemake@input$quant
 names(files) <- basename(dirname(files))

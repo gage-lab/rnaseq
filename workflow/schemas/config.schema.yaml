@@ -69,6 +69,12 @@ properties:
         type: object
       model:
         type: string
+      datatypes:
+        "^.*$":
+          type: string
+          enum:
+            - categorical
+            - numeric
       cutoffs:
         type: object
         properties:
