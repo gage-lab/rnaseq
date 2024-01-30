@@ -52,7 +52,7 @@ def is_paired_end(sample):
 
 ##### source snakemake rule files #####
 include: "rules/ref.smk"
-include: "rules/trim_galore.smk"
+include: "rules/trim.smk"
 
 
 if config["filterTSOforTE"]["activate"]:
