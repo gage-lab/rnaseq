@@ -92,7 +92,7 @@ p <- ggplot(res, aes(x = log2FoldChange, y = -log10(padj))) +
     point_size = 0.1,
   ) +
   labs(
-    caption = glue("{n_down} features downregulated; {n_up} features upregulated}"),
+    caption = glue("{n_down} features downregulated; {n_up} features upregulated"),
     size = bquote(~ Log[10] ~ "Mean"),
     color = NULL,
     x = bquote(~ Log[2] ~ "FoldChange"),
