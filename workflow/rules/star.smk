@@ -9,11 +9,11 @@ def get_star_input(wildcards):
             }
     elif config["trimming"]["activate"]:
         if not is_paired_end(wildcards.sample):
-            return {"fq1": rules.trim_galore_se.output}
+            return {"fq1": rules.fastp_se.output.trimmed}
         else:
             return {
-                "fq1": rules.trim_galore_pe.output[0],
-                "fq2": rules.trim_galore_pe.output[1],
+                "fq1": rules.fastp_pe.output.trimmed[0],
+                "fq2": rules.fastp_pe.output.trimmed[1],
             }
     else:
         if not is_paired_end(wildcards.sample):
