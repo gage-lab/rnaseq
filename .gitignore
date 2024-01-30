@@ -1,8 +1,13 @@
-results/**
-resources/**
+results
+resources
 logs/**
 .snakemake
-.snakemake/**
+.virtual_documents
 .test/results/**
 ftp*
 labshare*
+hgdownload*
+config
+config/**
+!config/config.yaml
+!config/*yaml*
