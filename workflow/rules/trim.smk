@@ -2,56 +2,49 @@ def get_trim_input(wildcards):
     sample_units = samples.loc[wildcards.sample]
     if not is_paired_end(wildcards.sample):
         # single end local sample
-        return [sample_units.fq1]
+        return {"sample": [sample_units.fq1]}
     else:
         # paired end local sample
-        return [sample_units.fq1, sample_units.fq2]
+        return {"sample": [sample_units.fq1, sample_units.fq2]}
 
 
-rule trim_galore_pe:
+rule fastp_se:
     input:
-        get_trim_input,
+        unpack(get_trim_input),
     output:
-        "{outdir}/trimmed/{sample}_val_1.fq.gz",
-        "{outdir}/trimmed/{sample}_val_2.fq.gz",
+        trimmed="{outdir}/trimmed/{sample}.fastq",
+        failed="{outdir}/trimmed/{sample}.failed.fastq",
+        html="{outdir}/trimmed/{sample}.html",
+        json="{outdir}/trimmed/{sample}.json",
     log:
         "{outdir}/trimmed/{sample}.log",
     params:
-        extra="-q 20",  # -q 20 is quality cutoff
-    threads: 4
-    conda:
-        "../envs/trim_galore.yaml"
-    shell:
-        """
-        trim_galore --paired \
-            --gzip\
-            {params.extra} \
-            --cores {threads} \
-            --output_dir $(dirname {output[0]}) \
-            --basename {wildcards.sample} \
-            {input} 2> {log}
-        """
+        adapters="",
+        extra="",
+    threads: 1
+    wrapper:
+        "v3.3.5/bio/fastp"
 
 
-rule trim_galore_se:
+rule fastp_pe:
     input:
-        get_trim_input,
+        unpack(get_trim_input),
     output:
-        "{outdir}/trimmed/{sample}_trimmed.fq.gz",
+        trimmed=[
+            "{outdir}/trimmed/{sample}.1.fastq",
+            "{outdir}/trimmed/{sample}.2.fastq",
+        ],
+        # Unpaired reads separately
+        unpaired1="{outdir}/trimmed/{sample}.u1.fastq",
+        unpaired2="{outdir}/trimmed/{sample}.u2.fastq",
+        failed="{outdir}/trimmed/{sample}.failed.fastq",
+        html="{outdir}/trimmed/{sample}.html",
+        json="{outdir}/trimmed/{sample}.json",
     log:
         "{outdir}/trimmed/{sample}.log",
     params:
-        extra="-q 20",  # -q 20 is quality cutoff
-    threads: 4
-    conda:
-        "../envs/trim_galore.yaml"
-    shell:
-        """
-        trim_galore \
-            --gzip \
-            {params.extra} \
-            --cores {threads} \
-            --basename {wildcards.sample} \
-            --output_dir $(dirname {output[0]}) \
-            {input} 2> {log}
-        """
+        adapters="",
+        extra="",
+    threads: 2
+    wrapper:
+        "v3.3.5/bio/fastp"
