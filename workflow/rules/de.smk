@@ -80,6 +80,8 @@ rule results:
         "{outdir}/de/{contrast}/logs/{de}_results.log",
     params:
         model=config["de"]["model"],
+        shrink_lfc=True,
+        shrink_type="apeglm",  # can be "ashr" or "apeglm"
     conda:
         "../envs/de.yaml"
     script:
