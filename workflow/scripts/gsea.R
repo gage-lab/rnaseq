@@ -26,7 +26,7 @@ gs <- snakemake@wildcards[["gs"]]
 # make ranked list of genes
 dge <- dplyr::filter(dge, !is.na(log2FoldChange))
 ranked <- dge$log2FoldChange
-names(ranked) <- stringr::str_remove(dge$gene_id, ".\\d+$")
+names(ranked) <- dge$gene_id
 ranked <- sort(ranked, decreasing = TRUE)
 
 # get gene sets
