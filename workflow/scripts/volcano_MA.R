@@ -26,7 +26,7 @@ n_up <- nrow(res[res$padj < FDRcutoff & res$log2FoldChange < -LFCcutoff, ])
 # label significant features
 res$sig <- res$padj < FDRcutoff
 res$sig[is.na(res$sig)] <- FALSE
-pdf(snakemake@output[[1]])
+pdf(snakemake@output[[1]], width = 10, height = 10)
 p <- ggplot() +
   geom_point(data = res[res$sig == F, ], aes(x = log10(baseMean), y = log2FoldChange, color = sig), alpha = 0.5) +
   geom_point(data = res[res$sig == T, ], aes(x = log10(baseMean), y = log2FoldChange, color = sig), alpha = 0.5) +
