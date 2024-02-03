@@ -1,15 +1,11 @@
 # Main entrypoint of the workflow.
 
 from snakemake.utils import min_version, validate
-from snakemake.remote import FTP, HTTP, AUTO
 import pandas as pd
 import os, shutil
 
-FTP = FTP.RemoteProvider()
-HTTP = HTTP.RemoteProvider()
-
 ##### set minimum snakemake version #####
-min_version("7.22.0")
+min_version("8.0.0")
 
 
 ##### read in config and samplesheet #####
@@ -61,17 +57,9 @@ if config["filterTSOforTE"]["activate"]:
 
 
 include: "rules/star.smk"
-
-
 include: "rules/salmon.smk"
-
-
 include: "rules/tetranscripts.smk"
-
-
 include: "rules/telocal.smk"
-
-
 include: "rules/qc.smk"
 
 
@@ -79,9 +67,11 @@ rule map_count:
     input:
         expand(
             rules.multiqc.output,
-            tso_filter=["tso_filter", "no_filter"]
-            if config["filterTSOforTE"]["activate"]
-            else ["no_filter"],
+            tso_filter=(
+                ["tso_filter", "no_filter"]
+                if config["filterTSOforTE"]["activate"]
+                else ["no_filter"]
+            ),
             outdir=config["outdir"],
         ),
 

@@ -4,9 +4,11 @@ channels:
   - nodefaults
 dependencies:
   - python>=3.9
-  - snakemake>=7.16
-  - snakefmt==0.8.0
+  - snakemake>=8
+  - snakefmt
   - pandas
   - biopython
   - pre-commit
   - gh
+  - snakemake-storage-plugin-ftp
+  - snakemake-storage-plugin-http

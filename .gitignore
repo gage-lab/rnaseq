@@ -1,6 +1,5 @@
 results
 resources
-logs/**
 .snakemake
 .virtual_documents
 .test/results/**
@@ -8,6 +7,9 @@ ftp*
 labshare*
 hgdownload*
 config
-config/**
+.conda
+.conda/**
+!.test/config
+!.test/config/config.yaml
 !config/config.yaml
 !config/*yaml*
