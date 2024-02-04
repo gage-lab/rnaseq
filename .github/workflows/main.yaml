@@ -41,7 +41,7 @@ jobs:
           channels: conda-forge,bioconda,nodefaults
           channel-priority: strict
       - name: Install Snakemake
-        run: mamba env create -f conda.yaml -n snake && conda activate snake
+        run: mamba env update -f conda.yaml
       - name: Generate test data
         run: cd .test/ngs-test-data && snakemake rnaseq --use-conda --cores 2
       - name: Run map_count
