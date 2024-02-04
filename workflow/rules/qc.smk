@@ -6,7 +6,7 @@ def get_fastqc_input(wildcards):
             return rules.filterTSO_se.output.fastq
         elif "trimmed" in wildcards.suffix:
             # single end trimmed sample
-            return rules.trim_galore_se.output
+            return rules.fastp_se.output
         else:
             # single end local sample
             return samples.loc[wildcards.sample]["fq1"]
@@ -20,9 +20,9 @@ def get_fastqc_input(wildcards):
                 return rules.filterTSO_pe.output.fastq2
         elif "trimmed" in wildcards.suffix:
             if "1" in wildcards.suffix:
-                return rules.trim_galore_pe.output[0]
+                return rules.fastp_pe.output[0]
             elif "2" in wildcards.suffix:
-                return rules.trim_galore_pe.output[1]
+                return rules.fastp_pe.output[1]
         # paired end local sample
         else:
             if wildcards.suffix == "1":
