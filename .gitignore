@@ -1,6 +1,6 @@
 results
 resources
-logs/**
+.conda
 .snakemake
 .virtual_documents
 .test/results/**
