@@ -19,8 +19,19 @@ Analysis pipeline for single-end or paired-end Illumina RNA-seq experiments
 10. Functional enrichment analysis on differential gene expression analysis using Gene set enrichment analysis (GSEA) and Overrepresentation analysis (ORA, aka GO analysis)
 11. Extensive QC with Fastqc, RNASeqC, and MultiQC
 
-## TODO
+## Run tests
+
+```bash
+snakemake map_count --use-conda -c1 --directory .test --rerun-incomplete --all-temp
+snakemake de --use-conda -c1 --directory .test --rerun-incomplete --all-temp
+```
+
+## Development
 
 - [ ] add config parameters to specify unique or multi for TEtranscripts and TElocal
 - [ ] add usage and contribution docs
 - [ ] add hyperlinks to each tool used in the pipeline
+- [ ] add L1EM
+- [ ] check if fastp is removing TSO
+- [ ] use tximport snakemake wrapper
+- [ ] upgrade to snakemake 8.0
