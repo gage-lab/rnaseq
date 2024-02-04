@@ -61,17 +61,9 @@ if config["filterTSOforTE"]["activate"]:
 
 
 include: "rules/star.smk"
-
-
 include: "rules/salmon.smk"
-
-
 include: "rules/tetranscripts.smk"
-
-
 include: "rules/telocal.smk"
-
-
 include: "rules/qc.smk"
 
 
@@ -79,9 +71,11 @@ rule map_count:
     input:
         expand(
             rules.multiqc.output,
-            tso_filter=["tso_filter", "no_filter"]
-            if config["filterTSOforTE"]["activate"]
-            else ["no_filter"],
+            tso_filter=(
+                ["tso_filter", "no_filter"]
+                if config["filterTSOforTE"]["activate"]
+                else ["no_filter"]
+            ),
             outdir=config["outdir"],
         ),
 

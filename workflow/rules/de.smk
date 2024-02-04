@@ -97,9 +97,11 @@ rule volcano_MA:
         "{outdir}/de/{contrast}/logs/{de}_volcano_MA.log",
     params:
         max_overlaps=15,
-        label=lambda wc: "gene_name"
-        if wc.de == "dge" or "dge_te_subfamily" or "dge_te_locus"
-        else "transcript_name",
+        label=lambda wc: (
+            "gene_name"
+            if wc.de == "dge" or "dge_te_subfamily" or "dge_te_locus"
+            else "transcript_name"
+        ),
     conda:
         "../envs/de.yaml"
     script:
