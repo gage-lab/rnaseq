@@ -12,12 +12,12 @@ rule fastp_se:
     input:
         unpack(get_trim_input),
     output:
-        trimmed="{outdir}/trimmed/{sample}.fastq",
-        failed="{outdir}/trimmed/{sample}.failed.fastq",
-        html="{outdir}/trimmed/{sample}.html",
-        json="{outdir}/trimmed/{sample}.json",
+        trimmed="{outdir}/trimmed/se/{sample}.fastq",
+        failed="{outdir}/trimmed/se/{sample}.failed.fastq",
+        html="{outdir}/trimmed/se/{sample}.html",
+        json="{outdir}/trimmed/se/{sample}.json",
     log:
-        "{outdir}/trimmed/{sample}.log",
+        "{outdir}/trimmed/se/{sample}.log",
     params:
         adapters="",
         extra="",
@@ -31,17 +31,17 @@ rule fastp_pe:
         unpack(get_trim_input),
     output:
         trimmed=[
-            "{outdir}/trimmed/{sample}.1.fastq",
-            "{outdir}/trimmed/{sample}.2.fastq",
+            "{outdir}/trimmed/pe/{sample}.1.fastq",
+            "{outdir}/trimmed/pe/{sample}.2.fastq",
         ],
         # Unpaired reads separately
-        unpaired1="{outdir}/trimmed/{sample}.u1.fastq",
-        unpaired2="{outdir}/trimmed/{sample}.u2.fastq",
-        failed="{outdir}/trimmed/{sample}.failed.fastq",
-        html="{outdir}/trimmed/{sample}.html",
-        json="{outdir}/trimmed/{sample}.json",
+        unpaired1="{outdir}/trimmed/pe/{sample}.u1.fastq",
+        unpaired2="{outdir}/trimmed/pe/{sample}.u2.fastq",
+        failed="{outdir}/trimmed/pe/{sample}.failed.fastq",
+        html="{outdir}/trimmed/pe/{sample}.html",
+        json="{outdir}/trimmed/pe/{sample}.json",
     log:
-        "{outdir}/trimmed/{sample}.log",
+        "{outdir}/trimmed/pe/{sample}.log",
     params:
         adapters="",
         extra="",
