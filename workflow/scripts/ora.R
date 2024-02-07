@@ -23,49 +23,81 @@ if (snakemake@config$species == "human") {
   orgdb <- org.Mm.eg.db
 }
 
-# for debugging
-# save.image(glue("{snakemake@wildcards[['contrast']]}_ora.RData"))
+#' Run GO analysis
+#' @param res DESeq2 results
+#' @param up_or_down "UP" or "DOWN"
+#' @param results_fn filename for results
+#' @param plot_fn filename for plot pdf
+myGO <- function(res, up_or_down, results_fn, plot_fn) {
+  # error checking
+  stopifnot(up_or_down %in% c("UP", "DOWN"))
 
-# UP-regulated
-sig <- res %>%
-  dplyr::filter(log2FoldChange > snakemake@config$de$cutoffs$log2FoldChange, padj < snakemake@config$de$cutoffs$FDR) %>%
-  dplyr::pull("gene_id")
+  if (up_or_down == "UP") {
+    # UP-regulated
+    sig <- res %>%
+      dplyr::filter(log2FoldChange > snakemake@config[["de"]][["cutoffs"]][["log2FoldChange"]], padj < snakemake@config[["de"]][["cutoffs"]][["FDR"]]) %>%
+      dplyr::pull("gene_id")
+    sigFC <- res %>%
+      dplyr::filter(log2FoldChange > snakemake@config[["de"]][["cutoffs"]][["log2FoldChange"]], padj < snakemake@config[["de"]][["cutoffs"]][["FDR"]]) %>%
+      dplyr::pull("log2FoldChange")
+  } else {
+    # DOWN-regulated
+    sig <- res %>%
+      dplyr::filter(log2FoldChange < -snakemake@config[["de"]][["cutoffs"]][["log2FoldChange"]], padj < snakemake@config[["de"]][["cutoffs"]][["FDR"]]) %>%
+      dplyr::pull("gene_id")
+    sigFC <- res %>%
+      dplyr::filter(log2FoldChange < -snakemake@config[["de"]][["cutoffs"]][["log2FoldChange"]], padj < snakemake@config[["de"]][["cutoffs"]][["FDR"]]) %>%
+      dplyr::pull("log2FoldChange")
+  }
 
-# run GO enrichment
-message(glue("Running GO enrichment for {length(sig)} DOWN-regulated genes..."))
-message(head(sig))
-ego <- clusterProfiler::enrichGO(
-  gene = sig,
-  OrgDb = orgdb,
-  ont = "ALL",
-  universe = res$gene_id,
-  readable = TRUE,
-  keyType = "ENSEMBL",
-  pvalueCutoff = 1,
-  qvalueCutoff = 1,
-)
+  names(sigFC) <- sig
 
-# save results
-as.data.frame(ego) %>% readr::write_tsv(snakemake@output$up)
+  # run GO enrichment
+  message(glue("Running GO enrichment for {length(sig)} {up_or_down}-regulated genes..."))
+  ego <- clusterProfiler::enrichGO(
+    gene = sig,
+    OrgDb = orgdb,
+    ont = "ALL",
+    universe = res$gene_id,
+    readable = TRUE,
+    keyType = "ENSEMBL",
+    pvalueCutoff = 1,
+    qvalueCutoff = 1,
+  )
 
-# DOWN-regulated
-sig <- res %>%
-  dplyr::filter(log2FoldChange < -snakemake@config$de$cutoffs$log2FoldChange, padj < snakemake@config$de$cutoffs$FDR) %>%
-  dplyr::pull("gene_id")
+  message(glue("Found {nrow(ego)} enriched GO terms for {length(sig)} {up_or_down}-regulated genes"))
 
-# run GO enrichment
-message(glue("Running GO enrichment for {length(sig)} UP-regulated genes..."))
-message(head(sig))
-ego <- clusterProfiler::enrichGO(
-  gene = sig,
-  OrgDb = orgdb,
-  ont = "ALL",
-  universe = res$gene_id,
-  readable = TRUE,
-  keyType = "ENSEMBL",
-  pvalueCutoff = 1,
-  qvalueCutoff = 1,
-)
+  # save results
+  as.data.frame(ego) %>% readr::write_tsv(results_fn)
 
-# save results
-as.data.frame(ego) %>% readr::write_tsv(snakemake@output$down)
+  ego <- clusterProfiler::enrichGO(
+    gene = sig,
+    OrgDb = orgdb,
+    ont = "ALL",
+    universe = res$gene_id,
+    readable = TRUE,
+    keyType = "ENSEMBL",
+    pvalueCutoff = 1,
+    qvalueCutoff = 0.05,
+  )
+
+  if (length(ego) == 0 || nrow(ego) <= 3) {
+    file.create(plot_fn)
+    return(warning("Less than 4 enriched GO terms found, writing empty plots"))
+  }
+
+  # plot results
+  ego2 <- enrichplot::pairwise_termsim(ego)
+
+  pdf(plot_fn, width = 14, height = 10)
+  p <- enrichplot::treeplot(ego2)
+  print(p)
+  p <- enrichplot::cnetplot(ego, categorySize = "pvalue", foldChange = sigFC)
+  print(p)
+  p <- enrichplot::emapplot(ego2)
+  print(p)
+  dev.off()
+}
+
+myGO(res, up_or_down = "UP", results_fn = snakemake@output[["resultsUP"]], plot_fn = snakemake@output[["plotUP"]])
+myGO(res, up_or_down = "DOWN", results_fn = snakemake@output[["resultsDOWN"]], plot_fn = snakemake@output[["plotDOWN"]])

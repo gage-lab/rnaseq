@@ -139,8 +139,10 @@ rule ora:
     input:
         expand(rules.results.output, de="dge", allow_missing=True),
     output:
-        up="{outdir}/de/{contrast}/up_ora.tsv",
-        down="{outdir}/de/{contrast}/down_ora.tsv",
+        resultsUP="{outdir}/de/{contrast}/ora_resultsUP.tsv",
+        resultsDOWN="{outdir}/de/{contrast}/ora_resultsDOWN.tsv",
+        plotUP="{outdir}/de/{contrast}/ora_plotsUP.pdf",
+        plotDOWN="{outdir}/de/{contrast}/ora_plotsDOWN.pdf",
     log:
         "{outdir}/de/{contrast}/logs/ora.log",
     conda:
