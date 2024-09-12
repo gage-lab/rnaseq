@@ -25,6 +25,10 @@ if (snakemake@config$species == "human") {
   orgdb <- org.Mm.eg.db
 }
 
+# for debugging
+# save.image(glue("deseq_swish.RData"))
+# stop()
+
 # make coldata for tximeta
 coldata <- readr::read_tsv(snakemake@input$samplesheet)
 for (c in names(snakemake@config$de$datatypes)) {

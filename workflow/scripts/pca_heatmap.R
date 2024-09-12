@@ -30,6 +30,11 @@ nsamples <- ncol(assay(vst))
 # PCA
 # TODO: add loadings plot/output
 message("Running PCA")
+
+# for debugging
+# save.image(glue("PCA_heatmap.RData"))
+# stop()
+
 p <- PCAtools::pca(assay(vst), metadata = colData(dds))
 
 # make plots
@@ -40,6 +45,8 @@ scree <- PCAtools::screeplot(p, components = comps) + theme_classic()
 print(scree)
 
 comps <- getComponents(p, seq_len(5))
+# remove interaction terms
+terms <- terms[!grepl(":", terms)]
 for (t in terms) {
   bi <- PCAtools::biplot(p, legendPosition = "right", colby = t, lab = NULL) +
     coord_fixed()
